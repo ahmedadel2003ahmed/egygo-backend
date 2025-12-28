@@ -1,5 +1,6 @@
 import { sendAdminNotification } from "../utils/mailer.js";
 import admin from "../config/firebase.js";
+import GuideRepository from "../repositories/guideRepository.js";
 
 /**
  * Notification Service - Business logic for notifications
@@ -113,8 +114,21 @@ class NotificationService {
    * Notify guide about new trip request
    */
   async notifyGuideNewTripRequest(guide, trip, tourist) {
+    const userId = guide.user?._id || guide.user;
     console.log(
-      `New trip request for guide ${guide.user.email} from tourist ${tourist.email}`
+      `New trip request for guide (User ID: ${userId}) from tourist ${tourist.email}`
+    );
+
+    if (!userId) {
+      console.error("notifyGuideNewTripRequest: Missing user ID for guide", guide._id);
+      return;
+    }
+
+    await this._sendPushNotification(
+      userId,
+      "New Trip Request",
+      `You have a new trip request from ${tourist.name || "a tourist"}`,
+      { notificationId: trip._id, type: "new_trip_request" }
     );
   }
 
@@ -132,9 +146,21 @@ class NotificationService {
    */
   async notifyGuideCall(guideUserId, touristUserId, callId) {
     console.log(
-      `Incoming call for guide ${guideUserId} from tourist ${touristUserId}`
+      `Incoming call for guide user ${guideUserId} from tourist ${touristUserId}`
     );
-    console.log(`Call session ID: ${callId}`);
+    
+    if (!guideUserId) {
+       console.error("notifyGuideCall: Missing guideUserId");
+       return;
+    }
+
+    // Here guideUserId is the USER ID of the guide, so we can use it directly
+    await this._sendPushNotification(
+        guideUserId,
+        "Incoming Call",
+        "A tourist is calling you regarding a trip.",
+        { notificationId: callId, type: "incoming_call" }
+    );
   }
 
   /**
@@ -142,8 +168,15 @@ class NotificationService {
    */
   async notifyGuideSelected(guide, trip) {
     console.log(`Guide ${guide._id} selected for trip ${trip._id}`);
+    
+    const userId = guide.user?._id || guide.user;
+    if (!userId) {
+       console.error("notifyGuideSelected: Missing user ID for guide", guide._id);
+       return;
+    }
+
     await this._sendPushNotification(
-      guide.user,
+      userId,
       "You've been selected for a trip!",
       `A tourist has selected you as their guide.`,
       { notificationId: trip._id, type: "guide_selected" }
@@ -155,8 +188,15 @@ class NotificationService {
    */
   async notifyGuideTripPendingConfirmation(guide, trip) {
     console.log(`Trip ${trip._id} pending confirmation for guide ${guide._id}`);
+    
+    const userId = guide.user?._id || guide.user;
+    if (!userId) {
+       console.error("notifyGuideTripPendingConfirmation: Missing user ID for guide", guide._id);
+       return;
+    }
+
     await this._sendPushNotification(
-      guide.user,
+      userId,
       "Trip Pending Confirmation",
       "Please review and confirm the trip details.",
       { notificationId: trip._id, type: "trip_pending_confirmation" }
@@ -228,6 +268,19 @@ class NotificationService {
    */
   async notifyGuideProposalAccepted(tripId, guideId) {
     console.log(`Notifying guide ${guideId} about proposal acceptance for trip ${tripId}...`);
+    const guide = await GuideRepository.findById(guideId);
+    
+    if (!guide || !guide.user || !guide.user._id) {
+       console.error(`notifyGuideProposalAccepted: Guide user not found for guideId ${guideId}`);
+       return;
+    }
+
+    await this._sendPushNotification(
+        guide.user._id,
+        "Proposal Accepted",
+        "Your proposal has been accepted by the tourist.",
+        { notificationId: tripId, type: "proposal_accepted" }
+    );
   }
 
   /**
@@ -235,23 +288,46 @@ class NotificationService {
    */
   async notifyGuideProposalRejected(tripId, guideId) {
     console.log(`Notifying guide ${guideId} about proposal rejection for trip ${tripId}...`);
+    const guide = await GuideRepository.findById(guideId);
+    
+    if (!guide || !guide.user || !guide.user._id) {
+       console.error(`notifyGuideProposalRejected: Guide user not found for guideId ${guideId}`);
+       return;
+    }
+
+    await this._sendPushNotification(
+        guide.user._id,
+        "Proposal Rejected",
+        "Your proposal has been rejected.",
+        { notificationId: tripId, type: "proposal_rejected" }
+    );
   }
 
   /**
    * Send Firebase push notification
    * @private
    */
-  async _sendPushNotification(userIdOrObject, title, body, data) {
+  async _sendPushNotification(userId, title, body, data) {
     try {
+      if (!userId) {
+        console.error("_sendPushNotification: No userId provided");
+        return;
+      }
+
       const User = (await import("../models/User.js")).default;
-
-      // Handle if userIdOrObject is a populated user object
-      const userId = userIdOrObject?._id || userIdOrObject;
-
-      const user = await User.findById(userId);
       
-      if (!user || !user.fcmTokens || user.fcmTokens.length === 0) {
-        console.log(`No FCM tokens found for user ${userId}`);
+      // Handle if passed a full user object, OR string
+      const targetUserId = userId._id ? userId._id : userId;
+
+      const user = await User.findById(targetUserId);
+      
+      if (!user) {
+         console.error(`_sendPushNotification: User not found for ID ${targetUserId}`);
+         return;
+      }
+
+      if (!user.fcmTokens || user.fcmTokens.length === 0) {
+        console.log(`No FCM tokens found for user ${targetUserId}`);
         return;
       }
 
