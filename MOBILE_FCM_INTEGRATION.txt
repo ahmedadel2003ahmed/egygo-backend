@@ -1,0 +1,61 @@
+# Mobile App Integration Required: FCM Token Registration
+
+## Critical Update for Push Notifications
+To ensure that guides (and tourists) receive push notifications for trip requests, calls, and updates, the mobile application **MUST** register the device's Firebase Cloud Messaging (FCM) token with the backend.
+
+### How it works
+1. **User logs in** (or app starts up if session is persisted).
+2. **App gets FCM Token** from Firebase SDK on the device.
+3. **App sends FCM Token** to the backend API.
+
+The backend stores this token in the `users` collection. When an event occurs (e.g., "New Trip Request"), the backend looks up the user's tokens and sends the notification.
+
+---
+
+## Implementation Details
+
+### 1. New Endpoint
+**URL**: `POST /api/auth/fcm-token`  
+**Auth**: Bearer Token (Required)
+
+### 2. Request Body
+```json
+{
+  "token": "YOUR_DEVICE_FCM_TOKEN_STRING"
+}
+```
+
+### 3. Example Request (cURL)
+```bash
+curl -X POST https://your-backend-url.com/api/auth/fcm-token \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "token": "f78a0sd7f890as7df890a7sdf890..."
+  }'
+```
+
+### 4. Success Response
+**Status**: `200 OK`
+```json
+{
+  "success": true,
+  "message": "FCM token updated successfully"
+}
+```
+
+---
+
+## When to Call This
+You should call this endpoint in the following scenarios:
+1. **Immediately after Login**: Once the user successfully logs in and you have the `accessToken`.
+2. **On App Startup**: If the user is already logged in (token persisted).
+3. **On Token Refresh**: If the Firebase SDK indicates that the FCM token has changed on the device side.
+
+## Why This Is Required
+The backend strictly sends notifications to `User` entities. If the `fcmTokens` array in the user's database record is empty, **no notifications will be sent**.
+
+Current backend logs show:
+> `No FCM tokens found for user <USER_ID>`
+
+Implementing this call will fix that error and enable real-time notifications for the "New Trip Flow".

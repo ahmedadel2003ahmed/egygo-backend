@@ -144,3 +144,25 @@ export const changePassword = asyncHandler(async (req, res) => {
     ...result,
   });
 });
+
+/**
+ * Update FCM Token
+ * POST /api/auth/fcm-token
+ */
+export const updateFCMToken = asyncHandler(async (req, res) => {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({
+      success: false,
+      message: "Token is required",
+    });
+  }
+
+  await authService.updateFCMToken(req.userId, token);
+
+  res.status(HTTP_STATUS.OK).json({
+    success: true,
+    message: "FCM token updated successfully",
+  });
+});

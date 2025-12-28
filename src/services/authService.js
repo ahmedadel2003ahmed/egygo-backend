@@ -264,6 +264,17 @@ class AuthService {
 
     return user;
   }
+
+  /**
+   * Update FCM Token
+   */
+  async updateFCMToken(userId, token) {
+    const user = await userRepository.addFCMToken(userId, token);
+    if (!user) {
+      throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
+    }
+    return user;
+  }
 }
 
 export default new AuthService();

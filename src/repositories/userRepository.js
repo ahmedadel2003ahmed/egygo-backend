@@ -52,6 +52,14 @@ class UserRepository {
     const count = await User.countDocuments({ email: email.toLowerCase() });
     return count > 0;
   }
+
+  async addFCMToken(userId, token) {
+    return await User.findByIdAndUpdate(
+      userId,
+      { $addToSet: { fcmTokens: token } },
+      { new: true }
+    );
+  }
 }
 
 export default new UserRepository();

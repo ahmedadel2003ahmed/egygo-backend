@@ -275,4 +275,29 @@ router.get('/me', authenticate, authController.getMe);
  */
 router.put('/change-password', authenticate, validate(validatePasswordChange), authController.changePassword);
 
+/**
+ * @swagger
+ * /auth/fcm-token:
+ *   post:
+ *     summary: Update FCM token
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - token
+ *             properties:
+ *               token:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: FCM token updated successfully
+ */
+router.post('/fcm-token', authenticate, authController.updateFCMToken);
+
 export default router;
