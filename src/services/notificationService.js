@@ -156,7 +156,7 @@ class NotificationService {
   async notifyGuideTripPendingConfirmation(guide, trip) {
     console.log(`Trip ${trip._id} pending confirmation for guide ${guide._id}`);
     await this._sendPushNotification(
-      trip.selectedGuide.user,
+      guide.user,
       "Trip Pending Confirmation",
       "Please review and confirm the trip details.",
       { notificationId: trip._id, type: "trip_pending_confirmation" }
@@ -241,9 +241,13 @@ class NotificationService {
    * Send Firebase push notification
    * @private
    */
-  async _sendPushNotification(userId, title, body, data) {
+  async _sendPushNotification(userIdOrObject, title, body, data) {
     try {
       const User = (await import("../models/User.js")).default;
+
+      // Handle if userIdOrObject is a populated user object
+      const userId = userIdOrObject?._id || userIdOrObject;
+
       const user = await User.findById(userId);
       
       if (!user || !user.fcmTokens || user.fcmTokens.length === 0) {
