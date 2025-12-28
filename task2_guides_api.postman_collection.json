@@ -1,0 +1,452 @@
+{
+  "info": {
+    "name": "Task 2: Guides API",
+    "description": "API endpoints for finding and managing guides in EGYGO",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "guide_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Provinces",
+      "item": [
+        {
+          "name": "Get All Provinces",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/provinces",
+              "host": ["{{base_url}}"],
+              "path": ["api", "provinces"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Province by Slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/provinces/giza",
+              "host": ["{{base_url}}"],
+              "path": ["api", "provinces", "giza"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Guides in Province",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/provinces/giza/guides?language=English&verified=true&page=1&limit=10&sort=rating",
+              "host": ["{{base_url}}"],
+              "path": ["api", "provinces", "giza", "guides"],
+              "query": [
+                {
+                  "key": "language",
+                  "value": "English",
+                  "description": "Filter by language"
+                },
+                {
+                  "key": "verified",
+                  "value": "true",
+                  "description": "Filter by verified status"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Items per page"
+                },
+                {
+                  "key": "sort",
+                  "value": "rating",
+                  "description": "Sort by: rating, price, distance"
+                },
+                {
+                  "key": "maxPrice",
+                  "value": "150",
+                  "description": "Maximum price per hour",
+                  "disabled": true
+                },
+                {
+                  "key": "near",
+                  "value": "29.9792,31.1342",
+                  "description": "lat,lng for proximity search",
+                  "disabled": true
+                },
+                {
+                  "key": "radius",
+                  "value": "10000",
+                  "description": "Radius in meters",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Guides in Cairo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/provinces/cairo/guides",
+              "host": ["{{base_url}}"],
+              "path": ["api", "provinces", "cairo", "guides"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Guides in Luxor (Verified Only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/provinces/luxor/guides?verified=true",
+              "host": ["{{base_url}}"],
+              "path": ["api", "provinces", "luxor", "guides"],
+              "query": [
+                {
+                  "key": "verified",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Guides",
+      "item": [
+        {
+          "name": "Get Guide by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/guides/{{guide_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "guides", "{{guide_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Guide by Slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/guides/ahmed-hassan-cairo",
+              "host": ["{{base_url}}"],
+              "path": ["api", "guides", "ahmed-hassan-cairo"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Guide Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/guides/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "guides", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create/Update Guide Profile",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Smith\",\n  \"slug\": \"john-smith-cairo\",\n  \"province\": \"cairo\",\n  \"languages\": [\"English\", \"Arabic\"],\n  \"pricePerHour\": 120,\n  \"bio\": \"Experienced guide with passion for Egyptian history and culture. Specializing in Cairo tours.\",\n  \"avatar\": \"https://example.com/avatar.jpg\",\n  \"location\": {\n    \"type\": \"Point\",\n    \"coordinates\": [31.2357, 30.0444]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/guides/me/profile",
+              "host": ["{{base_url}}"],
+              "path": ["api", "guides", "me", "profile"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload Guide Document",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "type",
+                  "value": "id_document",
+                  "type": "text",
+                  "description": "Options: id_document, tourism_card, english_certificate, other"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/guides/{{guide_id}}/documents",
+              "host": ["{{base_url}}"],
+              "path": ["api", "guides", "{{guide_id}}", "documents"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Filters & Search",
+      "item": [
+        {
+          "name": "Guides by Language (French)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/provinces/alexandria/guides?language=French",
+              "host": ["{{base_url}}"],
+              "path": ["api", "provinces", "alexandria", "guides"],
+              "query": [
+                {
+                  "key": "language",
+                  "value": "French"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Affordable Guides (Max 130 EGP/hour)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/provinces/cairo/guides?maxPrice=130",
+              "host": ["{{base_url}}"],
+              "path": ["api", "provinces", "cairo", "guides"],
+              "query": [
+                {
+                  "key": "maxPrice",
+                  "value": "130"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Guides Near Pyramids (Geospatial)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/provinces/giza/guides?near=29.9792,31.1342&radius=5000",
+              "host": ["{{base_url}}"],
+              "path": ["api", "provinces", "giza", "guides"],
+              "query": [
+                {
+                  "key": "near",
+                  "value": "29.9792,31.1342",
+                  "description": "Pyramids coordinates (lat,lng)"
+                },
+                {
+                  "key": "radius",
+                  "value": "5000",
+                  "description": "5km radius"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Top Rated Guides in Luxor",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/provinces/luxor/guides?verified=true&sort=rating&limit=5",
+              "host": ["{{base_url}}"],
+              "path": ["api", "provinces", "luxor", "guides"],
+              "query": [
+                {
+                  "key": "verified",
+                  "value": "true"
+                },
+                {
+                  "key": "sort",
+                  "value": "rating"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Budget Guides Sorted by Price",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/provinces/aswan/guides?sort=price&maxPrice=150",
+              "host": ["{{base_url}}"],
+              "path": ["api", "provinces", "aswan", "guides"],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "price"
+                },
+                {
+                  "key": "maxPrice",
+                  "value": "150"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Multilingual Guides in Red Sea",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/provinces/red-sea/guides?language=Russian&verified=true",
+              "host": ["{{base_url}}"],
+              "path": ["api", "provinces", "red-sea", "guides"],
+              "query": [
+                {
+                  "key": "language",
+                  "value": "Russian"
+                },
+                {
+                  "key": "verified",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Pagination",
+      "item": [
+        {
+          "name": "Guides Page 1",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/provinces/cairo/guides?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "provinces", "cairo", "guides"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Guides Page 2",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/provinces/cairo/guides?page=2&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "provinces", "cairo", "guides"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "2"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

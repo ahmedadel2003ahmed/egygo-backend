@@ -1,0 +1,432 @@
+{
+	"info": {
+		"_postman_id": "guide-trip-calls-mgmt-2024",
+		"name": "Guide Trip & Calls Management",
+		"description": "Complete Postman collection for Guide Trip Management and Video/Audio Calls functionality. Includes all necessary endpoints for guides to manage trips and handle call sessions.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{guideToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "Trip Management",
+			"item": [
+				{
+					"name": "Get My Trips",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/guide/trips?page={{page}}&limit={{limit}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"guide",
+								"trips"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "{{page}}",
+									"description": "Page number (default: 1)"
+								},
+								{
+									"key": "limit",
+									"value": "{{limit}}",
+									"description": "Results per page (default: 20)"
+								}
+							]
+						},
+						"description": "Get all trips for the authenticated guide with pagination. Returns trips where the guide is assigned (either as guide or selectedGuide)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Trip Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/guide/trips/{{tripId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"guide",
+								"trips",
+								"{{tripId}}"
+							]
+						},
+						"description": "Get detailed information about a specific trip. Guide must be assigned to this trip."
+					},
+					"response": []
+				},
+				{
+					"name": "Accept Trip",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/guide/trips/{{tripId}}/accept",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"guide",
+								"trips",
+								"{{tripId}}",
+								"accept"
+							]
+						},
+						"description": "Accept a trip request. Trip status must be 'pending_confirmation' or similar state. Guide must be the selected guide for this trip."
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Trip",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"reason\": \"Unfortunately, I have a conflict in my schedule at that time. Please select another guide or choose a different time slot.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/guide/trips/{{tripId}}/reject",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"guide",
+								"trips",
+								"{{tripId}}",
+								"reject"
+							]
+						},
+						"description": "Reject a trip request with an optional reason. Trip will be marked as rejected."
+					},
+					"response": []
+				},
+				{
+					"name": "Propose Change for Trip",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"proposedItinerary\": [\n        {\n            \"placeId\": \"674e0c5e0e238a6f47db2e01\",\n            \"visitDurationMinutes\": 120,\n            \"notes\": \"Visit the Great Pyramid and Sphinx\",\n            \"ticketRequired\": true\n        },\n        {\n            \"placeId\": \"674e0c5e0e238a6f47db2e02\",\n            \"visitDurationMinutes\": 90,\n            \"notes\": \"Explore the Solar Boat Museum\",\n            \"ticketRequired\": true\n        },\n        {\n            \"placeId\": \"674e0c5e0e238a6f47db2e03\",\n            \"visitDurationMinutes\": 60,\n            \"notes\": \"Lunch at local restaurant with pyramid view\",\n            \"ticketRequired\": false\n        }\n    ],\n    \"proposedStartAt\": \"2025-12-28T09:00:00.000Z\",\n    \"note\": \"I recommend starting earlier to avoid crowds and heat. Also added the Solar Boat Museum which is a hidden gem most tourists miss. The suggested itinerary provides a better flow and more comfortable pace.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/guide/trips/{{tripId}}/propose-change",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"guide",
+								"trips",
+								"{{tripId}}",
+								"propose-change"
+							]
+						},
+						"description": "Guide proposes changes to the trip itinerary or start time. Tourist must accept or reject the proposal. You can propose changes to itinerary, start time, or both."
+					},
+					"response": []
+				},
+				{
+					"name": "Complete Trip",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/guide/trips/{{tripId}}/complete",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"guide",
+								"trips",
+								"{{tripId}}",
+								"complete"
+							]
+						},
+						"description": "Mark a trip as completed. This should be done when the trip has finished successfully. Trip status must be 'active' or 'in_progress'."
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Trip",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"reason\": \"Emergency situation - unable to proceed with the trip. Sincere apologies for the inconvenience.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/guide/trips/{{tripId}}/cancel",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"guide",
+								"trips",
+								"{{tripId}}",
+								"cancel"
+							]
+						},
+						"description": "Cancel a confirmed trip with a reason. This should only be used in exceptional circumstances as it affects the guide's reputation."
+					},
+					"response": []
+				}
+			],
+			"description": "All endpoints for guide trip management including viewing, accepting, rejecting, proposing changes, completing, and canceling trips."
+		},
+		{
+			"name": "Video/Audio Calls",
+			"item": [
+				{
+					"name": "Join Call",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/calls/{{callId}}/join",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"calls",
+								"{{callId}}",
+								"join"
+							]
+						},
+						"description": "Join a call session and get RTC token. This endpoint auto-detects the user's role (guide/tourist) and returns the Agora token to join the video/audio call."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Call Token",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/calls/{{callId}}/token?role=guide",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"calls",
+								"{{callId}}",
+								"token"
+							],
+							"query": [
+								{
+									"key": "role",
+									"value": "guide",
+									"description": "User role: 'guide' or 'tourist' (required)"
+								}
+							]
+						},
+						"description": "Get Agora RTC token to join a call. The role parameter must be 'guide' for guide users. Returns token, appId, and channel information needed to establish the call connection."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active Calls",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/calls/active",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"calls",
+								"active"
+							]
+						},
+						"description": "Get all active call sessions for the current guide. Returns list of ongoing calls where the guide is a participant."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Call Session Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/calls/{{callId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"calls",
+								"{{callId}}"
+							]
+						},
+						"description": "Get detailed information about a specific call session including participants, status, duration, and trip information. Guide must be a participant in this call."
+					},
+					"response": []
+				},
+				{
+					"name": "End Call",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"endReason\": \"completed\",\n    \"summary\": \"Discussed trip itinerary for the Pyramids tour. Agreed on 4-hour tour covering Giza Pyramids, Sphinx, and Solar Boat Museum. Also covered transportation arrangements and meeting point details.\",\n    \"negotiatedPrice\": 150,\n    \"agreedToTerms\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/calls/{{callId}}/end",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"calls",
+								"{{callId}}",
+								"end"
+							]
+						},
+						"description": "End a call session with negotiation results. This saves the call summary, agreed price, and other details. Trip status changes to 'pending_confirmation' after call ends.\n\nValid endReason values:\n- completed: Call finished successfully\n- timeout: Call timed out\n- cancelled: Call was cancelled\n- no_answer: Other party did not answer\n- technical_issue: Technical problem occurred"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Incoming Calls",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/guide/calls/incoming",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"guide",
+								"calls",
+								"incoming"
+							]
+						},
+						"description": "Get incoming/pending call requests for the guide. Returns calls that are waiting for the guide to join."
+					},
+					"response": []
+				}
+			],
+			"description": "All endpoints for managing video/audio call sessions using Agora RTC. Includes joining calls, getting tokens, viewing active calls, and ending sessions."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000",
+			"type": "string"
+		},
+		{
+			"key": "guideToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "tripId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "callId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "page",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "limit",
+			"value": "20",
+			"type": "string"
+		}
+	]
+}

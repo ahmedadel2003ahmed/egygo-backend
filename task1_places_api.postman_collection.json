@@ -1,0 +1,377 @@
+{
+  "info": {
+    "name": "EGYGO Task 1 - Provinces & Places API",
+    "description": "API endpoints for Egyptian governorates and tourist places",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Provinces",
+      "item": [
+        {
+          "name": "Get All Provinces",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/provinces",
+              "host": ["{{base_url}}"],
+              "path": ["api", "provinces"]
+            },
+            "description": "Retrieve list of all Egyptian governorates with basic information"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Province by Slug (Giza)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/provinces/giza",
+              "host": ["{{base_url}}"],
+              "path": ["api", "provinces", "giza"]
+            },
+            "description": "Get Giza province details with places grouped by type (archaeological, entertainment, hotels, events)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Province by Slug (Cairo)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/provinces/cairo",
+              "host": ["{{base_url}}"],
+              "path": ["api", "provinces", "cairo"]
+            },
+            "description": "Get Cairo province details with sections"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Province by Slug (Luxor)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/provinces/luxor",
+              "host": ["{{base_url}}"],
+              "path": ["api", "provinces", "luxor"]
+            },
+            "description": "Get Luxor province details with sections"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Province Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/provinces/giza/stats",
+              "host": ["{{base_url}}"],
+              "path": ["api", "provinces", "giza", "stats"]
+            },
+            "description": "Get statistics for a province (total places by type)"
+          },
+          "response": []
+        },
+        {
+          "name": "Search Provinces",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/provinces/search?q=alex",
+              "host": ["{{base_url}}"],
+              "path": ["api", "provinces", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "alex"
+                }
+              ]
+            },
+            "description": "Search provinces by name"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Places",
+      "item": [
+        {
+          "name": "Get All Places",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/places?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "places"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Get paginated list of all places"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Place by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/places/{{place_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "places", "{{place_id}}"]
+            },
+            "description": "Get detailed information about a specific place. Replace {{place_id}} with an actual MongoDB ObjectId from your database."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Places by Province (All Types)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/provinces/giza/places?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "provinces", "giza", "places"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Get all places in Giza province with pagination"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Archaeological Places (Giza)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/provinces/giza/places?type=archaeological",
+              "host": ["{{base_url}}"],
+              "path": ["api", "provinces", "giza", "places"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "archaeological"
+                }
+              ]
+            },
+            "description": "Get only archaeological sites in Giza"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Entertainment Places (Cairo)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/provinces/cairo/places?type=entertainment",
+              "host": ["{{base_url}}"],
+              "path": ["api", "provinces", "cairo", "places"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "entertainment"
+                }
+              ]
+            },
+            "description": "Get entertainment venues in Cairo"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Hotels (Luxor)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/provinces/luxor/places?type=hotels",
+              "host": ["{{base_url}}"],
+              "path": ["api", "provinces", "luxor", "places"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "hotels"
+                }
+              ]
+            },
+            "description": "Get hotels in Luxor"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Events (Alexandria)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/provinces/alexandria/places?type=events",
+              "host": ["{{base_url}}"],
+              "path": ["api", "provinces", "alexandria", "places"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "events"
+                }
+              ]
+            },
+            "description": "Get events in Alexandria"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Places Near Coordinates",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/places/near?lat=29.9792&lng=31.1342&radius=5000",
+              "host": ["{{base_url}}"],
+              "path": ["api", "places", "near"],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "29.9792",
+                  "description": "Latitude (Giza Pyramids)"
+                },
+                {
+                  "key": "lng",
+                  "value": "31.1342",
+                  "description": "Longitude (Giza Pyramids)"
+                },
+                {
+                  "key": "radius",
+                  "value": "5000",
+                  "description": "Search radius in meters"
+                }
+              ]
+            },
+            "description": "Find places near the Great Pyramid of Giza within 5km radius"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Places Near with Type Filter",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/places/near?lat=25.6872&lng=32.6396&radius=10000&type=archaeological",
+              "host": ["{{base_url}}"],
+              "path": ["api", "places", "near"],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "25.6872",
+                  "description": "Latitude (Luxor)"
+                },
+                {
+                  "key": "lng",
+                  "value": "32.6396",
+                  "description": "Longitude (Luxor)"
+                },
+                {
+                  "key": "radius",
+                  "value": "10000",
+                  "description": "10km radius"
+                },
+                {
+                  "key": "type",
+                  "value": "archaeological"
+                }
+              ]
+            },
+            "description": "Find archaeological sites near Luxor within 10km"
+          },
+          "response": []
+        },
+        {
+          "name": "Search Places",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/places/search?q=pyramid&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "places", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "pyramid"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Search for places containing 'pyramid' in name, description, or tags"
+          },
+          "response": []
+        },
+        {
+          "name": "Search Places with Type Filter",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/places/search?q=museum&type=archaeological",
+              "host": ["{{base_url}}"],
+              "path": ["api", "places", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "museum"
+                },
+                {
+                  "key": "type",
+                  "value": "archaeological"
+                }
+              ]
+            },
+            "description": "Search for archaeological museums"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "place_id",
+      "value": "REPLACE_WITH_ACTUAL_ID",
+      "type": "string"
+    }
+  ]
+}

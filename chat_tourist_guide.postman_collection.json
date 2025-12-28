@@ -1,0 +1,701 @@
+{
+	"info": {
+		"_postman_id": "chat-tourist-guide-2024",
+		"name": "EgyGo - Chat (Tourist & Guide)",
+		"description": "Complete collection for testing real-time chat between Tourist and Guide using REST API and Socket.io.\n\n## Features\n- Chat message history retrieval\n- Chat access validation\n- Tourist and Guide authentication\n- Socket.io connection testing examples\n\n## Setup\n1. Create environment with variables: `BASE_URL`, `TOURIST_TOKEN`, `GUIDE_TOKEN`\n2. Login as Tourist and Guide to get tokens\n3. Create a trip and select a guide\n4. Test chat endpoints\n\n## Socket.io Testing\nFor Socket.io real-time messaging, use separate tools like:\n- Socket.io Client (Node.js)\n- Postman WebSocket (limited support)\n- Browser-based Socket.io clients",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Setup & Authentication",
+			"item": [
+				{
+					"name": "Register Tourist",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Tourist\",\n  \"email\": \"tourist@chat.test\",\n  \"password\": \"Test123!\",\n  \"phone\": \"+20123456789\",\n  \"role\": \"tourist\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/auth/register",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						},
+						"description": "Register a new tourist account for chat testing"
+					},
+					"response": []
+				},
+				{
+					"name": "Login Tourist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.accessToken) {",
+									"        pm.environment.set('TOURIST_TOKEN', response.data.accessToken);",
+									"        pm.environment.set('TOURIST_ID', response.data.user._id);",
+									"        console.log('Tourist token saved');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"tourist@chat.test\",\n  \"password\": \"Test123!\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/auth/login",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login as tourist and save JWT token"
+					},
+					"response": []
+				},
+				{
+					"name": "Login Guide",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.accessToken) {",
+									"        pm.environment.set('GUIDE_TOKEN', response.data.accessToken);",
+									"        pm.environment.set('GUIDE_ID', response.data.user._id);",
+									"        console.log('Guide token saved');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"guide@example.com\",\n  \"password\": \"your-guide-password\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/auth/login",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login as guide and save JWT token"
+					},
+					"response": []
+				}
+			],
+			"description": "Setup authentication tokens for tourist and guide"
+		},
+		{
+			"name": "Trip Setup",
+			"item": [
+				{
+					"name": "Create Trip (Tourist)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.trip && response.trip._id) {",
+									"        pm.environment.set('TRIP_ID', response.trip._id);",
+									"        console.log('Trip ID saved: ' + response.trip._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{TOURIST_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"startAt\": \"2025-12-30T10:00:00.000Z\",\n  \"meetingAddress\": \"Cairo Museum, Tahrir Square\",\n  \"totalDurationMinutes\": 240,\n  \"provinceId\": \"{{PROVINCE_ID}}\",\n  \"notes\": \"Looking forward to exploring Cairo\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/trips",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"trips"
+							]
+						},
+						"description": "Create a new trip without guide selection"
+					},
+					"response": []
+				},
+				{
+					"name": "Select Guide for Trip",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{TOURIST_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"guideId\": \"{{GUIDE_ID}}\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/trips/{{TRIP_ID}}/select-guide",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"trips",
+								"{{TRIP_ID}}",
+								"select-guide"
+							]
+						},
+						"description": "Select a guide for the trip. Chat becomes available after this step."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Trip Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{TOURIST_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/trips/{{TRIP_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"trips",
+								"{{TRIP_ID}}"
+							]
+						},
+						"description": "Get trip details to verify guide selection"
+					},
+					"response": []
+				}
+			],
+			"description": "Create trip and select guide (required before chat)"
+		},
+		{
+			"name": "Chat - REST API",
+			"item": [
+				{
+					"name": "Check Chat Access (Tourist)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{TOURIST_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/chat/{{TRIP_ID}}/access",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"chat",
+								"{{TRIP_ID}}",
+								"access"
+							]
+						},
+						"description": "Verify tourist has access to chat for this trip"
+					},
+					"response": []
+				},
+				{
+					"name": "Check Chat Access (Guide)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{GUIDE_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/chat/{{TRIP_ID}}/access",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"chat",
+								"{{TRIP_ID}}",
+								"access"
+							]
+						},
+						"description": "Verify guide has access to chat for this trip"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Chat Messages (Tourist)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{TOURIST_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/chat/{{TRIP_ID}}/messages?limit=50&skip=0",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"chat",
+								"{{TRIP_ID}}",
+								"messages"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "50",
+									"description": "Max 200 messages per request"
+								},
+								{
+									"key": "skip",
+									"value": "0",
+									"description": "Skip N messages for pagination"
+								}
+							]
+						},
+						"description": "Retrieve chat message history for the trip as tourist"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Chat Messages (Guide)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{GUIDE_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/chat/{{TRIP_ID}}/messages?limit=50&skip=0",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"chat",
+								"{{TRIP_ID}}",
+								"messages"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "50"
+								},
+								{
+									"key": "skip",
+									"value": "0"
+								}
+							]
+						},
+						"description": "Retrieve chat message history for the trip as guide"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Chat Messages - Unauthorized Trip",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{TOURIST_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/chat/INVALID_TRIP_ID/messages",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"chat",
+								"INVALID_TRIP_ID",
+								"messages"
+							]
+						},
+						"description": "Test access control - should return 403 or 404"
+					},
+					"response": []
+				}
+			],
+			"description": "REST API endpoints for chat message retrieval and access validation"
+		},
+		{
+			"name": "Socket.io Testing - Node.js Script",
+			"item": [
+				{
+					"name": "Socket.io Connection Example",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}",
+							"host": [
+								"{{BASE_URL}}"
+							]
+						},
+						"description": "# Socket.io Real-time Chat Testing\n\nPostman doesn't fully support Socket.io connections. Use the following Node.js script instead:\n\n## Test Script (save as `test-chat-socket.js`):\n\n```javascript\nconst io = require('socket.io-client');\n\n// Configuration\nconst BACKEND_URL = 'http://localhost:5001';\nconst TOURIST_TOKEN = 'YOUR_TOURIST_JWT_TOKEN';\nconst GUIDE_TOKEN = 'YOUR_GUIDE_JWT_TOKEN';\nconst TRIP_ID = 'YOUR_TRIP_ID';\n\n// Tourist Socket\nconst touristSocket = io(BACKEND_URL, {\n  auth: { token: TOURIST_TOKEN },\n  transports: ['websocket', 'polling'],\n});\n\n// Guide Socket\nconst guideSocket = io(BACKEND_URL, {\n  auth: { token: GUIDE_TOKEN },\n  transports: ['websocket', 'polling'],\n});\n\n// Tourist Event Handlers\ntouristSocket.on('connect', () => {\n  console.log('🟢 Tourist connected:', touristSocket.id);\n  \n  // Join trip chat\n  touristSocket.emit('join_trip_chat', { tripId: TRIP_ID });\n});\n\ntouristSocket.on('joined_chat', (data) => {\n  console.log('✅ Tourist joined chat:', data);\n  \n  // Send a message after joining\n  setTimeout(() => {\n    touristSocket.emit('send_message', {\n      tripId: TRIP_ID,\n      message: 'Hello from tourist! Looking forward to the trip!'\n    });\n  }, 1000);\n});\n\ntouristSocket.on('new_message', (data) => {\n  console.log('💬 Tourist received message:', data);\n});\n\ntouristSocket.on('chat_error', (error) => {\n  console.error('❌ Tourist chat error:', error);\n});\n\ntouristSocket.on('disconnect', () => {\n  console.log('🔴 Tourist disconnected');\n});\n\n// Guide Event Handlers\nguideSocket.on('connect', () => {\n  console.log('🟢 Guide connected:', guideSocket.id);\n  \n  // Join trip chat\n  guideSocket.emit('join_trip_chat', { tripId: TRIP_ID });\n});\n\nguideSocket.on('joined_chat', (data) => {\n  console.log('✅ Guide joined chat:', data);\n  \n  // Send a message after joining\n  setTimeout(() => {\n    guideSocket.emit('send_message', {\n      tripId: TRIP_ID,\n      message: 'Hello! I\\'m excited to be your guide. Let me know if you have any questions!'\n    });\n  }, 2000);\n});\n\nguideSocket.on('new_message', (data) => {\n  console.log('💬 Guide received message:', data);\n});\n\nguideSocket.on('chat_error', (error) => {\n  console.error('❌ Guide chat error:', error);\n});\n\nguideSocket.on('disconnect', () => {\n  console.log('🔴 Guide disconnected');\n});\n\n// Cleanup on exit\nprocess.on('SIGINT', () => {\n  console.log('\\n👋 Disconnecting sockets...');\n  touristSocket.disconnect();\n  guideSocket.disconnect();\n  process.exit();\n});\n\nconsole.log('🚀 Starting chat test...');\nconsole.log('Press Ctrl+C to exit');\n```\n\n## Run the script:\n```bash\ncd backend\nnode test-chat-socket.js\n```\n\n## Expected Output:\n```\n🚀 Starting chat test...\n🟢 Tourist connected: abc123\n🟢 Guide connected: def456\n✅ Tourist joined chat: { tripId: '...', message: 'Successfully joined chat' }\n✅ Guide joined chat: { tripId: '...', message: 'Successfully joined chat' }\n💬 Guide received message: { sender: {...}, message: 'Hello from tourist!', ... }\n💬 Tourist received message: { sender: {...}, message: 'Hello! I'm excited...', ... }\n```"
+					},
+					"response": []
+				}
+			],
+			"description": "Socket.io requires a WebSocket client. Use the Node.js script provided in the request description."
+		},
+		{
+			"name": "AI Chat (Nefertiti)",
+			"item": [
+				{
+					"name": "Chat with AI Tour Guide",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Tell me about the Pyramids of Giza\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/chat",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"chat"
+							]
+						},
+						"description": "Public endpoint for AI tour guide chat (Nefertiti)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Test Scenarios",
+			"item": [
+				{
+					"name": "Scenario 1: Chat Before Guide Selection",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{TOURIST_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/chat/{{TRIP_ID}}/access",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"chat",
+								"{{TRIP_ID}}",
+								"access"
+							]
+						},
+						"description": "Test accessing chat before guide is selected. Should return error: 'No guide selected for this trip yet'"
+					},
+					"response": []
+				},
+				{
+					"name": "Scenario 2: Chat with Wrong Trip ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{TOURIST_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/chat/000000000000000000000000/messages",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"chat",
+								"000000000000000000000000",
+								"messages"
+							]
+						},
+						"description": "Test with non-existent trip ID. Should return 404"
+					},
+					"response": []
+				},
+				{
+					"name": "Scenario 3: Guide Access Wrong Trip",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{GUIDE_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/chat/{{WRONG_TRIP_ID}}/messages",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"chat",
+								"{{WRONG_TRIP_ID}}",
+								"messages"
+							]
+						},
+						"description": "Test guide accessing chat for trip they're not assigned to. Should return 403"
+					},
+					"response": []
+				},
+				{
+					"name": "Scenario 4: Pagination Test",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{TOURIST_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/chat/{{TRIP_ID}}/messages?limit=10&skip=0",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"chat",
+								"{{TRIP_ID}}",
+								"messages"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "First 10 messages"
+								},
+								{
+									"key": "skip",
+									"value": "0"
+								}
+							]
+						},
+						"description": "Test message pagination - first page"
+					},
+					"response": []
+				},
+				{
+					"name": "Scenario 5: Max Limit Test",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{TOURIST_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/chat/{{TRIP_ID}}/messages?limit=200",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"chat",
+								"{{TRIP_ID}}",
+								"messages"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "200",
+									"description": "Max allowed limit"
+								}
+							]
+						},
+						"description": "Test maximum limit (200 messages)"
+					},
+					"response": []
+				}
+			],
+			"description": "Common test scenarios for chat functionality"
+		},
+		{
+			"name": "Database Verification",
+			"item": [
+				{
+					"name": "MongoDB Query - Check Messages",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}",
+							"host": [
+								"{{BASE_URL}}"
+							]
+						},
+						"description": "# MongoDB Verification Queries\n\nRun these queries in MongoDB Compass or mongo shell:\n\n## 1. Check all messages for a trip\n```javascript\ndb.tripchatmessages.find({ trip: ObjectId('YOUR_TRIP_ID') }).sort({ createdAt: 1 })\n```\n\n## 2. Count messages between tourist and guide\n```javascript\ndb.tripchatmessages.countDocuments({\n  trip: ObjectId('YOUR_TRIP_ID'),\n  'sender.role': 'tourist'\n})\n```\n\n## 3. Find latest messages\n```javascript\ndb.tripchatmessages.find({ trip: ObjectId('YOUR_TRIP_ID') })\n  .sort({ createdAt: -1 })\n  .limit(10)\n```\n\n## 4. Verify indexes\n```javascript\ndb.tripchatmessages.getIndexes()\n```\n\n## 5. Check message by sender\n```javascript\ndb.tripchatmessages.find({\n  'sender.user': ObjectId('YOUR_USER_ID')\n})\n```"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "http://localhost:5001",
+			"type": "string"
+		},
+		{
+			"key": "TOURIST_TOKEN",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "GUIDE_TOKEN",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "TRIP_ID",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "TOURIST_ID",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "GUIDE_ID",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "PROVINCE_ID",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "WRONG_TRIP_ID",
+			"value": "000000000000000000000000",
+			"type": "string"
+		}
+	]
+}

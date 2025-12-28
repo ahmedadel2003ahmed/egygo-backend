@@ -1,0 +1,788 @@
+{
+	"info": {
+		"_postman_id": "admin-endpoints-collection-2024",
+		"name": "EgyGo - Complete Admin API",
+		"description": "Complete collection of all admin endpoints for EgyGo platform including authentication, guide management, and attraction management.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{adminToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000",
+			"type": "string"
+		},
+		{
+			"key": "adminToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "adminEmail",
+			"value": "kerosobhy222@gmail.com",
+			"type": "string"
+		},
+		{
+			"key": "adminPassword",
+			"value": "Admin@123456",
+			"type": "string"
+		},
+		{
+			"key": "guideId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "documentId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "attractionId",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Admin Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Automatically save the access token",
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.success && response.data.tokens) {",
+									"        pm.collectionVariables.set('adminToken', response.data.tokens.accessToken);",
+									"        console.log('Admin token saved:', response.data.tokens.accessToken);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login as admin to get authentication token. Token is automatically saved to collection variables."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current Admin Profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/me",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"me"
+							]
+						},
+						"description": "Get the current authenticated admin user profile."
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Admin Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/refresh-token",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"refresh-token"
+							]
+						},
+						"description": "Refresh the admin access token using refresh token."
+					},
+					"response": []
+				},
+				{
+					"name": "Admin Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/logout",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						},
+						"description": "Logout the admin user and invalidate tokens."
+					},
+					"response": []
+				}
+			],
+			"description": "Admin authentication endpoints including login, profile, token refresh and logout."
+		},
+		{
+			"name": "Guide Management",
+			"item": [
+				{
+					"name": "Get All Pending Guides",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Save the first guide ID if available",
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.success && response.data && response.data.length > 0) {",
+									"        pm.collectionVariables.set('guideId', response.data[0]._id);",
+									"        console.log('Guide ID saved:', response.data[0]._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/guides/pending?page=1&limit=20",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"guides",
+								"pending"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (default: 1)"
+								},
+								{
+									"key": "limit",
+									"value": "20",
+									"description": "Results per page (default: 20)"
+								}
+							]
+						},
+						"description": "Get list of all pending guide applications waiting for admin approval. Supports pagination with page and limit query parameters."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Guide Details by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/guides/{{guideId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"guides",
+								"{{guideId}}"
+							]
+						},
+						"description": "Get detailed information about a specific guide by their ID. Returns guide profile including personal information, verification status, and documents."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Guide Documents",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Save the first document ID if available",
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.success && response.data && response.data.length > 0) {",
+									"        pm.collectionVariables.set('documentId', response.data[0]._id);",
+									"        console.log('Document ID saved:', response.data[0]._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/guides/{{guideId}}/documents",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"guides",
+								"{{guideId}}",
+								"documents"
+							]
+						},
+						"description": "Get all documents submitted by a specific guide. Documents may include ID, certifications, licenses, etc. Returns document metadata, URLs, and verification status."
+					},
+					"response": []
+				},
+				{
+					"name": "Approve Guide Document",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"documentId\": \"{{documentId}}\",\n  \"status\": \"approved\",\n  \"note\": \"All documents are valid and verified. Approved for guide services.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/guides/{{guideId}}/verify",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"guides",
+								"{{guideId}}",
+								"verify"
+							]
+						},
+						"description": "Approve a guide's submitted document. Requires documentId, status (must be 'approved'), and optional admin note. This action verifies the guide's credentials."
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Guide Document",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"documentId\": \"{{documentId}}\",\n  \"status\": \"rejected\",\n  \"note\": \"Document is not clear or does not meet verification requirements. Please resubmit with higher quality images.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/guides/{{guideId}}/verify",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"guides",
+								"{{guideId}}",
+								"verify"
+							]
+						},
+						"description": "Reject a guide's submitted document with reason. Requires documentId, status (must be 'rejected'), and admin note explaining rejection reason."
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Guide Document - Custom",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"documentId\": \"REPLACE_WITH_DOCUMENT_ID\",\n  \"status\": \"approved\",\n  \"note\": \"Enter your admin note here\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/guides/REPLACE_WITH_GUIDE_ID/verify",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"guides",
+								"REPLACE_WITH_GUIDE_ID",
+								"verify"
+							]
+						},
+						"description": "Verify guide document with custom IDs. Replace REPLACE_WITH_GUIDE_ID and REPLACE_WITH_DOCUMENT_ID with actual values.\n\nStatus must be either:\n- approved: Document is verified and accepted\n- rejected: Document is not valid or requires resubmission\n\nNote field is optional for approval but recommended for rejection to explain the reason."
+					},
+					"response": []
+				}
+			],
+			"description": "Admin endpoints for managing tour guides including viewing pending applications, viewing guide details, managing documents, and approving/rejecting guide applications."
+		},
+		{
+			"name": "Attraction Management",
+			"item": [
+				{
+					"name": "Create New Attraction",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Save the created attraction ID",
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.success && response.data) {",
+									"        pm.collectionVariables.set('attractionId', response.data._id);",
+									"        console.log('Attraction ID saved:', response.data._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"The Great Pyramids of Giza\",\n  \"description\": \"The Great Pyramids of Giza are among the most iconic and enduring symbols of ancient Egypt. These magnificent structures were built as tombs for pharaohs and stand as a testament to the architectural and engineering prowess of ancient civilization.\",\n  \"category\": \"historical\",\n  \"location\": {\n    \"coordinates\": [31.1342, 29.9792],\n    \"address\": \"Al Haram, Nazlet El-Semman, Giza Governorate, Egypt\",\n    \"city\": \"Giza\"\n  },\n  \"images\": [\n    {\n      \"url\": \"https://example.com/pyramids1.jpg\",\n      \"publicId\": \"pyramids1\"\n    },\n    {\n      \"url\": \"https://example.com/pyramids2.jpg\",\n      \"publicId\": \"pyramids2\"\n    }\n  ],\n  \"openingHours\": \"Daily: 08:00 - 17:00\",\n  \"ticketPrice\": 200\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/attractions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"attractions"
+							]
+						},
+						"description": "Create a new tourist attraction. Required fields: name (string), description (string, min 10 chars), category (one of: historical, museum, religious, natural, entertainment, other), and location (object with coordinates [longitude, latitude], address, and city). Optional fields: images (array of objects with url and publicId), openingHours (string), ticketPrice (number)."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Attraction - Minimal Required",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Karnak Temple Complex\",\n  \"description\": \"Ancient temple complex and religious site in Luxor\",\n  \"category\": \"historical\",\n  \"location\": {\n    \"coordinates\": [32.6573, 25.7188],\n    \"address\": \"Karnak, Luxor, Egypt\",\n    \"city\": \"Luxor\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/attractions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"attractions"
+							]
+						},
+						"description": "Create attraction with all required fields: name, description (min 10 chars), category (historical, museum, religious, natural, entertainment, or other), and location with coordinates [longitude, latitude], address, and city."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Attraction - Museum Example",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Egyptian Museum\",\n  \"description\": \"The Museum of Egyptian Antiquities, known commonly as the Egyptian Museum, in Cairo houses an extensive collection of ancient Egyptian antiquities with over 120,000 items.\",\n  \"category\": \"museum\",\n  \"location\": {\n    \"coordinates\": [31.2336, 30.0478],\n    \"address\": \"Tahrir Square, Cairo, Egypt\",\n    \"city\": \"Cairo\"\n  },\n  \"images\": [\n    {\n      \"url\": \"https://example.com/museum1.jpg\",\n      \"publicId\": \"museum1\"\n    }\n  ],\n  \"openingHours\": \"Monday-Thursday: 09:00-17:00, Friday: 09:00-14:00, Saturday-Sunday: 09:00-17:00\",\n  \"ticketPrice\": 300\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/attractions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"attractions"
+							]
+						},
+						"description": "Example of creating a museum attraction with full details including opening hours, entry fees, and amenities."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Attraction - Beach Example",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Cleopatra Beach\",\n  \"description\": \"Beautiful Mediterranean beach known for its crystal-clear waters and historic significance. Popular spot for swimming and sunbathing.\",\n  \"category\": \"natural\",\n  \"location\": {\n    \"coordinates\": [31.2111, 29.9511],\n    \"address\": \"Alexandria, Egypt\",\n    \"city\": \"Alexandria\"\n  },\n  \"images\": [\n    {\n      \"url\": \"https://example.com/beach1.jpg\",\n      \"publicId\": \"beach1\"\n    },\n    {\n      \"url\": \"https://example.com/beach2.jpg\",\n      \"publicId\": \"beach2\"\n    }\n  ],\n  \"ticketPrice\": 0\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/attractions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"attractions"
+							]
+						},
+						"description": "Example of creating a beach attraction with free entry and beach-specific amenities."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Attraction",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"The Great Pyramids of Giza - Updated\",\n  \"description\": \"Updated description for the pyramids with new information.\",\n  \"ticketPrice\": 240\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/attractions/{{attractionId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"attractions",
+								"{{attractionId}}"
+							]
+						},
+						"description": "Update an existing attraction. Can update any field including name, description, location, images, opening hours, fees, amenities, etc. Only include fields you want to update."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Attraction - Mark as Featured",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/attractions/{{attractionId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"attractions",
+								"{{attractionId}}"
+							]
+						},
+						"description": "Update attraction status to active."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Attraction",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/attractions/{{attractionId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"attractions",
+								"{{attractionId}}"
+							]
+						},
+						"description": "Permanently delete an attraction from the system (soft delete - sets isActive to false). This action can be reversed by updating isActive back to true."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Attraction - Custom ID",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/attractions/REPLACE_WITH_ATTRACTION_ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"attractions",
+								"REPLACE_WITH_ATTRACTION_ID"
+							]
+						},
+						"description": "Delete attraction with custom ID. Replace REPLACE_WITH_ATTRACTION_ID with the actual attraction ID you want to delete."
+					},
+					"response": []
+				}
+			],
+			"description": "Admin endpoints for managing tourist attractions including creating new attractions, updating existing ones, and deleting attractions. Attractions can be historical sites, museums, beaches, restaurants, etc."
+		},
+		{
+			"name": "Public Attraction Endpoints (Read-Only)",
+			"item": [
+				{
+					"name": "Get All Attractions",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/attractions?page=1&limit=20",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"attractions"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								},
+								{
+									"key": "category",
+									"value": "historical",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Public endpoint to view all active attractions. Supports filtering by category (historical, museum, religious, natural, entertainment, other). No authentication required."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Attraction by ID",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/attractions/{{attractionId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"attractions",
+								"{{attractionId}}"
+							]
+						},
+						"description": "Get detailed information about a specific attraction. No authentication required."
+					},
+					"response": []
+				}
+			],
+			"description": "Public endpoints for viewing attractions. These endpoints don't require admin authentication and can be used by any user to browse attractions."
+		},
+		{
+			"name": "Utility Endpoints",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/health",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"health"
+							]
+						},
+						"description": "Check if the API server is running and healthy. Returns server status and available endpoints."
+					},
+					"response": []
+				},
+				{
+					"name": "Get API Documentation",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api-docs",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api-docs"
+							]
+						},
+						"description": "Access Swagger API documentation in the browser."
+					},
+					"response": []
+				}
+			],
+			"description": "Utility endpoints for checking server health and accessing API documentation."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// This script runs before every request in the collection",
+					"console.log('Making request to:', pm.request.url.toString());",
+					"",
+					"// Check if admin token exists for protected routes",
+					"const url = pm.request.url.toString();",
+					"if (url.includes('/api/admin/') && !pm.collectionVariables.get('adminToken')) {",
+					"    console.warn('⚠️ Admin token not found. Please login first.');",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// This script runs after every request in the collection",
+					"console.log('Response status:', pm.response.code);",
+					"",
+					"// Log error messages if request fails",
+					"if (pm.response.code >= 400) {",
+					"    try {",
+					"        const response = pm.response.json();",
+					"        console.error('Error:', response.message || 'Unknown error');",
+					"    } catch (e) {",
+					"        console.error('Failed to parse error response');",
+					"    }",
+					"}"
+				]
+			}
+		}
+	]
+}

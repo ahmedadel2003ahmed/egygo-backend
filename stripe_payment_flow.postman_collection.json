@@ -1,0 +1,326 @@
+{
+  "info": {
+    "name": "EGYGO Payment Flow - Stripe Integration",
+    "description": "Complete payment flow testing: Guide Accept -> Tourist Pay -> Webhook Confirmation",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{authToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    },
+    {
+      "key": "tripId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "guideToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "touristToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "sessionId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Guide Accept Trip",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Trip status is awaiting_payment\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.trip.status).to.eql(\"awaiting_payment\");",
+              "});",
+              "",
+              "pm.test(\"Payment status is pending\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.trip.paymentStatus).to.eql(\"pending\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{guideToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/guide/trips/{{tripId}}/accept",
+          "host": ["{{baseUrl}}"],
+          "path": ["guide", "trips", "{{tripId}}", "accept"]
+        },
+        "description": "Guide accepts the trip. Trip status changes to 'awaiting_payment' and paymentStatus to 'pending'."
+      },
+      "response": []
+    },
+    {
+      "name": "2. Tourist Create Checkout Session",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Checkout URL is returned\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data.checkoutUrl).to.include(\"stripe.com\");",
+              "});",
+              "",
+              "pm.test(\"Session ID is returned\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data.sessionId).to.match(/^cs_test_/);",
+              "    pm.collectionVariables.set(\"sessionId\", jsonData.data.sessionId);",
+              "});",
+              "",
+              "console.log(\"Checkout URL:\", pm.response.json().data.checkoutUrl);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{touristToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/tourist/trips/{{tripId}}/create-checkout-session",
+          "host": ["{{baseUrl}}"],
+          "path": ["tourist", "trips", "{{tripId}}", "create-checkout-session"]
+        },
+        "description": "Tourist creates a Stripe Checkout session. Returns checkoutUrl to redirect user to Stripe."
+      },
+      "response": []
+    },
+    {
+      "name": "3. Idempotency Test - Create Session Again",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Returns same session ID (idempotent)\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data.sessionId).to.eql(pm.collectionVariables.get(\"sessionId\"));",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{touristToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/tourist/trips/{{tripId}}/create-checkout-session",
+          "host": ["{{baseUrl}}"],
+          "path": ["tourist", "trips", "{{tripId}}", "create-checkout-session"]
+        },
+        "description": "Test idempotency: calling the endpoint again should return the same session."
+      },
+      "response": []
+    },
+    {
+      "name": "4. Check Trip Status (Before Payment)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Trip has stripeSessionId\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data.stripeSessionId).to.be.a('string');",
+              "});",
+              "",
+              "pm.test(\"Payment status is still pending\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data.paymentStatus).to.eql(\"pending\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{touristToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/trips/{{tripId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["trips", "{{tripId}}"]
+        },
+        "description": "Check trip status before payment is completed."
+      },
+      "response": []
+    },
+    {
+      "name": "5. Check Trip Status (After Payment)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Trip status is confirmed\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data.status).to.eql(\"confirmed\");",
+              "});",
+              "",
+              "pm.test(\"Payment status is paid\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data.paymentStatus).to.eql(\"paid\");",
+              "});",
+              "",
+              "pm.test(\"Has payment intent ID\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data.stripePaymentIntentId).to.be.a('string');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{touristToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/trips/{{tripId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["trips", "{{tripId}}"]
+        },
+        "description": "Check trip status after payment webhook has been processed. Run this AFTER completing Stripe checkout."
+      },
+      "response": []
+    },
+    {
+      "name": "Security Test - Wrong Tourist Create Session",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 403\", function () {",
+              "    pm.response.to.have.status(403);",
+              "});",
+              "",
+              "pm.test(\"Error message about ownership\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.message).to.include(\"own trips\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{guideToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/tourist/trips/{{tripId}}/create-checkout-session",
+          "host": ["{{baseUrl}}"],
+          "path": ["tourist", "trips", "{{tripId}}", "create-checkout-session"]
+        },
+        "description": "Security test: Guide tries to create checkout session for trip (should fail)."
+      },
+      "response": []
+    }
+  ]
+}

@@ -1,0 +1,1478 @@
+{
+	"info": {
+		"_postman_id": "guide-complete-api-2024",
+		"name": "EgyGo - Complete Guide API Collection",
+		"description": "Comprehensive Postman collection for all Guide-related endpoints in the EgyGo platform.\n\nThis collection includes:\n- Guide Application & Profile Management\n- Document Management\n- Trip Management (Accept, Reject, Complete, Cancel)\n- Call Management\n- Gallery Management\n- Review Management\n- Public Guide Discovery\n\n## Authentication\nMost endpoints require authentication. Set the `authToken` variable after login.\n\n## Variables Required\n- `baseUrl`: API base URL (default: http://localhost:5001)\n- `authToken`: JWT token from login\n- `guideId`: Guide user ID\n- `tripId`: Trip ID for operations\n- `callId`: Call session ID\n- `reviewId`: Review ID",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Authentication",
+			"item": [
+				{
+					"name": "Register Guide",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('userId', response.user._id);",
+									"    pm.environment.set('userEmail', response.user.email);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"guide@example.com\",\n  \"password\": \"Password123!\",\n  \"name\": \"Ahmed Hassan\",\n  \"role\": \"guide\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify OTP",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('authToken', response.tokens.accessToken);",
+									"    pm.environment.set('refreshToken', response.tokens.refreshToken);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"otp\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/verify-otp",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "verify-otp"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Guide",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('authToken', response.tokens.accessToken);",
+									"    pm.environment.set('refreshToken', response.tokens.refreshToken);",
+									"    pm.environment.set('guideId', response.user._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"guide@example.com\",\n  \"password\": \"Password123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "login"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/me",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "me"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('authToken', response.accessToken);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/refresh",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "refresh"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/logout",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "logout"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Guide Application",
+			"item": [
+				{
+					"name": "Apply as Guide (with documents)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "languages",
+									"value": "English",
+									"type": "text"
+								},
+								{
+									"key": "languages",
+									"value": "Arabic",
+									"type": "text"
+								},
+								{
+									"key": "languages",
+									"value": "French",
+									"type": "text"
+								},
+								{
+									"key": "pricePerHour",
+									"value": "50",
+									"type": "text"
+								},
+								{
+									"key": "bio",
+									"value": "Experienced tour guide with 5 years of experience showing tourists the best of Egypt",
+									"type": "text"
+								},
+								{
+									"key": "isLicensed",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "idDocument",
+									"type": "file",
+									"src": "/path/to/id-document.jpg"
+								},
+								{
+									"key": "tourismCard",
+									"type": "file",
+									"src": "/path/to/tourism-card.jpg"
+								},
+								{
+									"key": "englishCertificate",
+									"type": "file",
+									"src": "/path/to/english-cert.jpg"
+								},
+								{
+									"key": "photo",
+									"type": "file",
+									"src": "/path/to/profile-photo.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/guide/apply",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "guide", "apply"]
+						},
+						"description": "Apply as a guide with required documents. Requires authentication but not guide role (for tourists applying to become guides).\n\nRequired fields:\n- languages: array of language strings\n- pricePerHour: number\n- isLicensed: boolean\n- idDocument: file\n- photo: file\n- tourismCard: file (required if isLicensed=true)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Guide Profile",
+			"item": [
+				{
+					"name": "Get Own Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/guide/profile",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "guide", "profile"]
+						},
+						"description": "Get authenticated guide's profile information"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"languages\": [\"English\", \"Arabic\", \"Spanish\"],\n  \"pricePerHour\": 60,\n  \"bio\": \"Updated bio: Professional tour guide specializing in ancient Egyptian history with 7 years experience.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/guide/profile",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "guide", "profile"]
+						},
+						"description": "Update guide profile information"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Public Guide Profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/places/guides/{{guideId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "places", "guides", "{{guideId}}"]
+						},
+						"description": "Get public profile of a specific guide by ID (no authentication required)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Guides by Province",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/places/provinces/:provinceSlug/guides?page=1&limit=20&sortBy=rating&minRating=4",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "places", "provinces", ":provinceSlug", "guides"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								},
+								{
+									"key": "sortBy",
+									"value": "rating",
+									"description": "Options: rating, price, experience"
+								},
+								{
+									"key": "minRating",
+									"value": "4"
+								},
+								{
+									"key": "maxPrice",
+									"value": "100",
+									"disabled": true
+								},
+								{
+									"key": "languages",
+									"value": "English,French",
+									"disabled": true
+								}
+							],
+							"variable": [
+								{
+									"key": "provinceSlug",
+									"value": "cairo"
+								}
+							]
+						},
+						"description": "Get all guides available in a specific province"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Document Management",
+			"item": [
+				{
+					"name": "Get Documents",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/guide/documents",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "guide", "documents"]
+						},
+						"description": "Get all uploaded documents for the authenticated guide"
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Document",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "document",
+									"type": "file",
+									"src": "/path/to/additional-document.pdf"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/guide/documents",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "guide", "documents"]
+						},
+						"description": "Upload an additional document"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Document",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/guide/documents/{{documentId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "guide", "documents", "{{documentId}}"]
+						},
+						"description": "Delete a specific document by ID"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5. Trip Management",
+			"item": [
+				{
+					"name": "Get All Trips",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/guide/trips?status=pending&page=1&limit=20",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "guide", "trips"],
+							"query": [
+								{
+									"key": "status",
+									"value": "pending",
+									"description": "pending, accepted, in_progress, completed, cancelled, rejected"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Get all trips for the authenticated guide with optional filtering"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Trip by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/guide/trips/{{tripId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "guide", "trips", "{{tripId}}"]
+						},
+						"description": "Get detailed information about a specific trip"
+					},
+					"response": []
+				},
+				{
+					"name": "Accept Trip",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/guide/trips/{{tripId}}/accept",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "guide", "trips", "{{tripId}}", "accept"]
+						},
+						"description": "Accept a pending trip request"
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Trip",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reason\": \"Not available on the requested dates\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/guide/trips/{{tripId}}/reject",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "guide", "trips", "{{tripId}}", "reject"]
+						},
+						"description": "Reject a trip request with optional reason"
+					},
+					"response": []
+				},
+				{
+					"name": "Complete Trip",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/guide/trips/{{tripId}}/complete",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "guide", "trips", "{{tripId}}", "complete"]
+						},
+						"description": "Mark a trip as completed"
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Trip",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reason\": \"Emergency - unable to fulfill trip\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/guide/trips/{{tripId}}/cancel",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "guide", "trips", "{{tripId}}", "cancel"]
+						},
+						"description": "Cancel an accepted trip with reason"
+					},
+					"response": []
+				},
+				{
+					"name": "Propose Trip Change",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"proposedChanges\": {\n    \"startDate\": \"2024-12-30T09:00:00.000Z\",\n    \"endDate\": \"2024-12-30T17:00:00.000Z\",\n    \"pricePerHour\": 70,\n    \"reason\": \"Better weather conditions and less crowded on this date\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/guide/trips/{{tripId}}/propose-change",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "guide", "trips", "{{tripId}}", "propose-change"]
+						},
+						"description": "Propose changes to trip details (date, price, etc.)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "6. Call Management",
+			"item": [
+				{
+					"name": "Get Incoming Calls",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/guide/calls/incoming",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "guide", "calls", "incoming"]
+						},
+						"description": "Get all incoming call requests for the guide"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active Calls",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/calls/active",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "calls", "active"]
+						},
+						"description": "Get all active call sessions for the current user"
+					},
+					"response": []
+				},
+				{
+					"name": "Join Call",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('agoraToken', response.token);",
+									"    pm.environment.set('agoraChannel', response.channelName);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/calls/{{callId}}/join",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "calls", "{{callId}}", "join"]
+						},
+						"description": "Join a call session and get Agora RTC token"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Call Token",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/calls/{{callId}}/token",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "calls", "{{callId}}", "token"]
+						},
+						"description": "Get/refresh Agora RTC token for an active call"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Call Details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/calls/{{callId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "calls", "{{callId}}"]
+						},
+						"description": "Get details of a specific call session"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "7. Gallery Management",
+			"item": [
+				{
+					"name": "Upload Gallery Images",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "images",
+									"type": "file",
+									"src": "/path/to/gallery-image-1.jpg"
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": "/path/to/gallery-image-2.jpg"
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": "/path/to/gallery-image-3.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/guide/gallery",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "guide", "gallery"]
+						},
+						"description": "Upload multiple images to guide's gallery (max 10 images)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Gallery Image",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/guide/gallery/{{imageId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "guide", "gallery", "{{imageId}}"]
+						},
+						"description": "Delete a specific image from guide's gallery"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "8. Reviews",
+			"item": [
+				{
+					"name": "Get Guide Reviews",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/reviews/guide/{{guideId}}?page=1&limit=20&sortBy=date",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "reviews", "guide", "{{guideId}}"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								},
+								{
+									"key": "sortBy",
+									"value": "date",
+									"description": "Options: date, rating, helpful"
+								},
+								{
+									"key": "rating",
+									"value": "5",
+									"description": "Filter by rating",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get all reviews for a specific guide (public endpoint)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Guide Review Stats",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/reviews/guide/{{guideId}}/stats",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "reviews", "guide", "{{guideId}}", "stats"]
+						},
+						"description": "Get review statistics for a guide (average rating, total reviews, rating distribution)"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Response to Review",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"response\": \"Thank you for your kind words! It was my pleasure showing you around Cairo. Looking forward to hosting you again!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/reviews/{{reviewId}}/response",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "reviews", "{{reviewId}}", "response"]
+						},
+						"description": "Guide can respond to a review left by a tourist"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "9. Chat",
+			"item": [
+				{
+					"name": "Get Trip Messages",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/chat/{{tripId}}/messages?limit=100&skip=0",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "chat", "{{tripId}}", "messages"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "100",
+									"description": "Max 200"
+								},
+								{
+									"key": "skip",
+									"value": "0"
+								}
+							]
+						},
+						"description": "Get chat messages for a specific trip (guide must be assigned to trip)"
+					},
+					"response": []
+				},
+				{
+					"name": "Check Chat Access",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/chat/{{tripId}}/access",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "chat", "{{tripId}}", "access"]
+						},
+						"description": "Check if guide has access to chat for a specific trip"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "10. New Trip Flow (Extended)",
+			"item": [
+				{
+					"name": "Initiate Call with Tourist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('callId', response.call._id);",
+									"    pm.environment.set('agoraToken', response.rtcToken);",
+									"    pm.environment.set('channelName', response.channelName);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/trips/{{tripId}}/calls/initiate",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "trips", "{{tripId}}", "calls", "initiate"]
+						},
+						"description": "Guide initiates a call with tourist for a specific trip"
+					},
+					"response": []
+				},
+				{
+					"name": "End Call Session",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"summary\": \"Discussed trip details, itinerary confirmed, agreed on meeting point at hotel lobby.\",\n  \"negotiatedPrice\": 350\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/calls/{{callId}}/end",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "calls", "{{callId}}", "end"]
+						},
+						"description": "End call session with summary and negotiated price"
+					},
+					"response": []
+				},
+				{
+					"name": "Accept Trip Booking",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/trips/{{tripId}}/guide-accept",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "trips", "{{tripId}}", "guide-accept"]
+						},
+						"description": "Guide accepts the trip booking after tourist payment"
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Trip Booking",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reason\": \"Unavailable due to scheduling conflict\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/trips/{{tripId}}/guide-reject",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "trips", "{{tripId}}", "guide-reject"]
+						},
+						"description": "Guide rejects the trip booking (tourist will be refunded)"
+					},
+					"response": []
+				},
+				{
+					"name": "Complete Trip",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"notes\": \"Trip completed successfully. Visited all planned locations.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/trips/{{tripId}}/complete",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "trips", "{{tripId}}", "complete"]
+						},
+						"description": "Mark trip as completed after the tour"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "11. Admin - Guide Management",
+			"item": [
+				{
+					"name": "Get Pending Guides",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/guides/pending?page=1&limit=20",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "guides", "pending"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Get all pending guide applications (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Guide Details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/guides/{{guideId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "guides", "{{guideId}}"]
+						},
+						"description": "Get detailed guide information including documents (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Guide Documents",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/guides/{{guideId}}/documents",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "guides", "{{guideId}}", "documents"]
+						},
+						"description": "Get all documents for a guide (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Guide Document",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"approved\",\n  \"notes\": \"All documents verified and approved\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/guides/{{guideId}}/verify",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "guides", "{{guideId}}", "verify"]
+						},
+						"description": "Approve or reject guide application (Admin only). Status: approved or rejected"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "12. Notifications",
+			"item": [
+				{
+					"name": "Socket.IO Connection Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/socket.io/",
+							"host": ["{{baseUrl}}"],
+							"path": ["socket.io", ""]
+						},
+						"description": "Socket.IO endpoint for real-time notifications.\n\nConnect with:\n```javascript\nconst socket = io('http://localhost:5001', {\n  auth: { token: 'your-jwt-token' }\n});\n\n// Listen for events\nsocket.on('tripStatusUpdate', (data) => console.log(data));\nsocket.on('newMessage', (data) => console.log(data));\nsocket.on('callIncoming', (data) => console.log(data));\n```\n\nGuide-specific events:\n- tripStatusUpdate: Trip status changes\n- newMessage: New chat messages\n- callIncoming: Incoming call from tourist\n- tripRequest: New trip request\n- paymentReceived: Payment confirmed for trip"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5001",
+			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refreshToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "guideId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "tripId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "callId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "documentId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "imageId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "reviewId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "agoraToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "channelName",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userEmail",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

@@ -1,0 +1,792 @@
+{
+	"info": {
+		"_postman_id": "create-trip-flow-collection",
+		"name": "EGYGO - Create Trip Flow",
+		"description": "Complete flow for creating a trip in EGYGO platform. Includes login, finding guides, initiating calls, and creating trips.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:5000",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "guide_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "place_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "call_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "trip_id",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Step 1 - Authentication",
+			"item": [
+				{
+					"name": "Register Tourist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.userId) {",
+									"        pm.collectionVariables.set('user_id', response.userId);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"tourist@example.com\",\n  \"password\": \"Test@123456\",\n  \"name\": \"Ahmed Mohamed\",\n  \"phone\": \"+201234567890\",\n  \"role\": \"tourist\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "register"]
+						},
+						"description": "Register a new tourist account. Skip if you already have an account."
+					}
+				},
+				{
+					"name": "Verify OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"tourist@example.com\",\n  \"otp\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/verify-otp",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "verify-otp"]
+						},
+						"description": "Verify your email with the OTP sent to your email"
+					}
+				},
+				{
+					"name": "Login as Tourist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.accessToken) {",
+									"        pm.collectionVariables.set('auth_token', response.data.accessToken);",
+									"        console.log('✅ Auth token saved');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"tourist@example.com\",\n  \"password\": \"Test@123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						},
+						"description": "Login and get authentication token"
+					}
+				}
+			],
+			"description": "Authenticate as a tourist user"
+		},
+		{
+			"name": "Step 2 - Find Guide & Place",
+			"item": [
+				{
+					"name": "Browse Places",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.length > 0) {",
+									"        pm.collectionVariables.set('place_id', response.data[0]._id);",
+									"        console.log('✅ Place ID saved: ' + response.data[0]._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/places?limit=5",
+							"host": ["{{base_url}}"],
+							"path": ["api", "places"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						},
+						"description": "Browse available places to visit"
+					}
+				},
+				{
+					"name": "Search Places by Name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/places/search?q=pyramids",
+							"host": ["{{base_url}}"],
+							"path": ["api", "places", "search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "pyramids"
+								}
+							]
+						},
+						"description": "Search for specific places"
+					}
+				},
+				{
+					"name": "Browse Guides",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.length > 0) {",
+									"        pm.collectionVariables.set('guide_id', response.data[0]._id);",
+									"        console.log('✅ Guide ID saved: ' + response.data[0]._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tourist/guides?verified=true&language=English&limit=5",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tourist", "guides"],
+							"query": [
+								{
+									"key": "verified",
+									"value": "true"
+								},
+								{
+									"key": "language",
+									"value": "English"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						},
+						"description": "Browse available guides with filters"
+					}
+				},
+				{
+					"name": "Get Guide Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tourist/guides/{{guide_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tourist", "guides", "{{guide_id}}"]
+						},
+						"description": "Get detailed information about a specific guide"
+					}
+				},
+				{
+					"name": "Get Guides by Province",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/provinces/cairo/guides?verified=true",
+							"host": ["{{base_url}}"],
+							"path": ["api", "provinces", "cairo", "guides"],
+							"query": [
+								{
+									"key": "verified",
+									"value": "true"
+								}
+							]
+						},
+						"description": "Find guides in a specific province"
+					}
+				}
+			],
+			"description": "Browse and find guides and places for your trip"
+		},
+		{
+			"name": "Step 3 - Initiate Call (Optional)",
+			"item": [
+				{
+					"name": "Initiate Call with Guide",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.callId) {",
+									"        pm.collectionVariables.set('call_id', response.data.callId);",
+									"        console.log('✅ Call ID saved: ' + response.data.callId);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"guideId\": \"{{guide_id}}\",\n  \"placeId\": \"{{place_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/calls/initiate",
+							"host": ["{{base_url}}"],
+							"path": ["api", "calls", "initiate"]
+						},
+						"description": "Initiate a video/audio call with the guide to discuss trip details and negotiate price"
+					}
+				},
+				{
+					"name": "Get Call Token",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/calls/{{call_id}}/token",
+							"host": ["{{base_url}}"],
+							"path": ["api", "calls", "{{call_id}}", "token"]
+						},
+						"description": "Get Agora RTC token to join the call"
+					}
+				},
+				{
+					"name": "End Call",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"endReason\": \"completed\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/calls/{{call_id}}/end",
+							"host": ["{{base_url}}"],
+							"path": ["api", "calls", "{{call_id}}", "end"]
+						},
+						"description": "End the call after negotiating trip details"
+					}
+				},
+				{
+					"name": "Convert Call to Trip Suggestion",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tourist/calls/{{call_id}}/convert-to-trip",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tourist", "calls", "{{call_id}}", "convert-to-trip"]
+						},
+						"description": "Helper endpoint to get suggested trip payload from call session"
+					}
+				}
+			],
+			"description": "Optional: Initiate a call to discuss and negotiate trip details with the guide"
+		},
+		{
+			"name": "Step 4 - Create Trip",
+			"item": [
+				{
+					"name": "Estimate Trip Cost",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"guideId\": \"{{guide_id}}\",\n  \"startAt\": \"2025-12-05T09:00:00Z\",\n  \"itinerary\": [\n    {\n      \"placeId\": \"{{place_id}}\",\n      \"visitDurationMinutes\": 120\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trips/estimate",
+							"host": ["{{base_url}}"],
+							"path": ["api", "trips", "estimate"]
+						},
+						"description": "Estimate trip duration and cost before creating"
+					}
+				},
+				{
+					"name": "Create Trip (After Call)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data._id) {",
+									"        pm.collectionVariables.set('trip_id', response.data._id);",
+									"        console.log('✅ Trip created successfully!');",
+									"        console.log('Trip ID: ' + response.data._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"guideId\": \"{{guide_id}}\",\n  \"negotiatedPrice\": 400,\n  \"startAt\": \"2025-12-05T09:00:00Z\",\n  \"totalDurationMinutes\": 240,\n  \"meetingPoint\": {\n    \"type\": \"Point\",\n    \"coordinates\": [31.1342, 29.9792]\n  },\n  \"meetingAddress\": \"Giza Pyramids Main Entrance, Giza, Egypt\",\n  \"callId\": \"{{call_id}}\",\n  \"itinerary\": [\n    {\n      \"placeId\": \"{{place_id}}\",\n      \"visitDurationMinutes\": 120,\n      \"notes\": \"Visit the Great Pyramid and take photos\",\n      \"ticketRequired\": true\n    }\n  ],\n  \"createdFromPlaceId\": \"{{place_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tourist/trips",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tourist", "trips"]
+						},
+						"description": "Create trip after negotiating via call. Requires callId from Step 3."
+					}
+				},
+				{
+					"name": "Create Trip (Manual Agreement)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data._id) {",
+									"        pm.collectionVariables.set('trip_id', response.data._id);",
+									"        console.log('✅ Trip created successfully!');",
+									"        console.log('Trip ID: ' + response.data._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"guideId\": \"{{guide_id}}\",\n  \"negotiatedPrice\": 350,\n  \"startAt\": \"2025-12-06T10:00:00Z\",\n  \"totalDurationMinutes\": 180,\n  \"meetingAddress\": \"Luxor Temple Main Entrance, Luxor, Egypt\",\n  \"agreedByBoth\": true,\n  \"agreementNote\": \"Agreed via WhatsApp on 2025-12-02. Tourist wants 3-hour Luxor temple tour.\",\n  \"itinerary\": [\n    {\n      \"placeId\": \"{{place_id}}\",\n      \"visitDurationMinutes\": 180,\n      \"notes\": \"Complete Luxor temple tour with historical explanations\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tourist/trips",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tourist", "trips"]
+						},
+						"description": "Create trip without call. Requires agreedByBoth=true and agreementNote explaining how agreement was reached (e.g., WhatsApp, phone call, email)."
+					}
+				},
+				{
+					"name": "Create Simple Trip (Minimal)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data._id) {",
+									"        pm.collectionVariables.set('trip_id', response.data._id);",
+									"        console.log('✅ Trip created!');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"guideId\": \"{{guide_id}}\",\n  \"negotiatedPrice\": 300,\n  \"startAt\": \"2025-12-07T14:00:00Z\",\n  \"meetingAddress\": \"Egyptian Museum, Cairo\",\n  \"agreedByBoth\": true,\n  \"agreementNote\": \"Agreement confirmed via phone call\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tourist/trips",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tourist", "trips"]
+						},
+						"description": "Create trip with minimal required fields only"
+					}
+				}
+			],
+			"description": "Create a trip after negotiating with the guide"
+		},
+		{
+			"name": "Step 5 - Manage Trip",
+			"item": [
+				{
+					"name": "Get My Trips",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tourist/trips?status=pending",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tourist", "trips"],
+							"query": [
+								{
+									"key": "status",
+									"value": "pending",
+									"description": "pending, confirmed, in_progress, completed, cancelled"
+								}
+							]
+						},
+						"description": "Get all trips for the tourist with optional status filter"
+					}
+				},
+				{
+					"name": "Get Trip Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tourist/trips/{{trip_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tourist", "trips", "{{trip_id}}"]
+						},
+						"description": "Get detailed information about a specific trip"
+					}
+				},
+				{
+					"name": "Cancel Trip",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reason\": \"Change of plans - need to reschedule\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tourist/trips/{{trip_id}}/cancel",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tourist", "trips", "{{trip_id}}", "cancel"]
+						},
+						"description": "Cancel a trip (tourist side)"
+					}
+				},
+				{
+					"name": "Accept Guide Proposal",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tourist/trips/{{trip_id}}/accept-proposal",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tourist", "trips", "{{trip_id}}", "accept-proposal"]
+						},
+						"description": "Accept changes proposed by the guide"
+					}
+				},
+				{
+					"name": "Reject Guide Proposal",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rejectionNote\": \"Original time works better for me\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tourist/trips/{{trip_id}}/reject-proposal",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tourist", "trips", "{{trip_id}}", "reject-proposal"]
+						},
+						"description": "Reject changes proposed by the guide"
+					}
+				},
+				{
+					"name": "Review Trip (After Completion)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rating\": 5,\n  \"comment\": \"Excellent guide! Very knowledgeable about Egyptian history and very friendly. Highly recommended!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tourist/trips/{{trip_id}}/review",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tourist", "trips", "{{trip_id}}", "review"]
+						},
+						"description": "Submit a review after trip completion"
+					}
+				}
+			],
+			"description": "Manage and track your trips"
+		},
+		{
+			"name": "Guide Actions (For Testing)",
+			"item": [
+				{
+					"name": "Guide - Accept Trip",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"description": "Use guide's token here"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/guide/trips/{{trip_id}}/accept",
+							"host": ["{{base_url}}"],
+							"path": ["api", "guide", "trips", "{{trip_id}}", "accept"]
+						},
+						"description": "Guide accepts the trip request (requires guide authentication)"
+					}
+				},
+				{
+					"name": "Guide - Reject Trip",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"description": "Use guide's token here"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reason\": \"Not available on that date\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/guide/trips/{{trip_id}}/reject",
+							"host": ["{{base_url}}"],
+							"path": ["api", "guide", "trips", "{{trip_id}}", "reject"]
+						},
+						"description": "Guide rejects the trip request"
+					}
+				},
+				{
+					"name": "Guide - Propose Changes",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"description": "Use guide's token here"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"proposedStartAt\": \"2025-12-05T10:00:00Z\",\n  \"note\": \"Can we start 1 hour later? I have another tour ending at 9:30 AM.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/guide/trips/{{trip_id}}/propose-change",
+							"host": ["{{base_url}}"],
+							"path": ["api", "guide", "trips", "{{trip_id}}", "propose-change"]
+						},
+						"description": "Guide proposes changes to the trip"
+					}
+				}
+			],
+			"description": "Guide actions for testing the complete flow (requires guide authentication)"
+		}
+	]
+}

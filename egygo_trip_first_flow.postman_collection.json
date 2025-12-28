@@ -1,0 +1,764 @@
+{
+	"info": {
+		"_postman_id": "trip-first-flow-2025",
+		"name": "EGYGO - Trip-First Flow (Complete)",
+		"description": "## 🎯 NEW Trip-First Flow\n\nThis collection implements the ONLY valid flow for EGYGO platform:\n\n**Flow Steps:**\n1. **Create Trip** - Tourist creates trip WITHOUT selecting guide\n2. **Get Trip-Compatible Guides** - Browse guides available for the trip\n3. **Select Guide** - Tourist selects a guide for the trip\n4. **Initiate Trip-Based Call** - Start video call with selected guide\n5. **End Call** - End call with summary and negotiated price\n6. **Guide Accept/Reject** - Guide confirms or declines the trip\n\n**Key Differences from Old Flow:**\n- ❌ OLD: Call Guide → Negotiate → Create Trip\n- ✅ NEW: Create Trip → Select Guide → Call → Confirm\n\n**Environment Variables Required:**\n- `base_url` - API base URL (e.g., http://localhost:5000)\n- `tourist_email` - Tourist login email\n- `tourist_password` - Tourist password\n- `guide_email` - Guide login email\n- `guide_password` - Guide password\n- `place_id` - Optional place ID for trip creation\n\n**Auto-Generated Variables:**\n- `tourist_token` - Tourist auth token (auto-saved)\n- `guide_token` - Guide auth token (auto-saved)\n- `trip_id` - Created trip ID (auto-saved)\n- `guide_id` - Selected guide ID (auto-saved)\n- `call_id` - Call session ID (auto-saved)\n\n**Version:** 2.0.0\n**Last Updated:** December 2, 2025",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"description": "Authentication endpoints for tourist and guide users",
+			"item": [
+				{
+					"name": "Login (Tourist)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Save tourist token automatically",
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has token', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.success).to.be.true;",
+									"    pm.expect(response.data.token).to.exist;",
+									"    ",
+									"    // Auto-save token",
+									"    pm.collectionVariables.set('tourist_token', response.data.token);",
+									"    pm.collectionVariables.set('tourist_id', response.data.user._id);",
+									"    ",
+									"    console.log('✅ Tourist authenticated');",
+									"    console.log('Token:', response.data.token.substring(0, 30) + '...');",
+									"    console.log('Tourist ID:', response.data.user._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{tourist_email}}\",\n  \"password\": \"{{tourist_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						},
+						"description": "Authenticate as a tourist user.\n\n**Required Environment Variables:**\n- `tourist_email`\n- `tourist_password`\n\n**Auto-Saved Variables:**\n- `tourist_token` - Authentication token\n- `tourist_id` - Tourist user ID\n\n**cURL Example:**\n```bash\ncurl -X POST {{base_url}}/api/auth/login \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"email\": \"tourist@test.com\",\n    \"password\": \"password123\"\n  }'\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Login (Guide)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Save guide token automatically",
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has token', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.success).to.be.true;",
+									"    pm.expect(response.data.token).to.exist;",
+									"    ",
+									"    // Auto-save token",
+									"    pm.collectionVariables.set('guide_token', response.data.token);",
+									"    pm.collectionVariables.set('guide_id', response.data.user._id);",
+									"    ",
+									"    console.log('✅ Guide authenticated');",
+									"    console.log('Token:', response.data.token.substring(0, 30) + '...');",
+									"    console.log('Guide ID:', response.data.user._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{guide_email}}\",\n  \"password\": \"{{guide_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						},
+						"description": "Authenticate as a guide user.\n\n**Required Environment Variables:**\n- `guide_email`\n- `guide_password`\n\n**Auto-Saved Variables:**\n- `guide_token` - Authentication token\n- `guide_id` - Guide user ID\n\n**cURL Example:**\n```bash\ncurl -X POST {{base_url}}/api/auth/login \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"email\": \"guide@test.com\",\n    \"password\": \"password123\"\n  }'\n```"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Trip-First Flow",
+			"description": "Complete trip creation flow following the NEW architecture:\n\n1. Create Trip (no guide required)\n2. Get compatible guides for trip\n3. Select a guide\n4. Initiate call with guide\n5. End call with summary + price\n6. Guide accepts or rejects trip",
+			"item": [
+				{
+					"name": "1. Create Trip",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Save trip ID automatically",
+									"pm.test('Status code is 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Trip created successfully', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.success).to.be.true;",
+									"    pm.expect(response.data.trip).to.exist;",
+									"    pm.expect(response.data.trip._id).to.exist;",
+									"    ",
+									"    // Auto-save trip ID",
+									"    pm.collectionVariables.set('trip_id', response.data.trip._id);",
+									"    ",
+									"    console.log('✅ Trip created');",
+									"    console.log('Trip ID:', response.data.trip._id);",
+									"    console.log('Status:', response.data.trip.status);",
+									"    console.log('Meeting Address:', response.data.trip.meetingAddress);",
+									"});",
+									"",
+									"pm.test('Trip status is awaiting_guide_selection', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.trip.status).to.equal('awaiting_guide_selection');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tourist_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"startAt\": \"2025-12-20T09:00:00Z\",\n  \"meetingAddress\": \"Pyramids of Giza, Al Haram, Giza Governorate, Egypt\",\n  \"meetingPoint\": {\n    \"type\": \"Point\",\n    \"coordinates\": [31.1342, 29.9765]\n  },\n  \"itinerary\": []\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tourist/trips",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tourist", "trips"]
+						},
+						"description": "**Step 1: Create a trip WITHOUT selecting a guide**\n\nTourist creates a trip specifying:\n- Start date/time\n- Meeting location\n- Optional itinerary\n- Optional place reference\n\n**Key Point:** NO `guideId` required! Guide is selected in the next step.\n\n**Request Body:**\n```json\n{\n  \"startAt\": \"2025-12-20T09:00:00Z\",\n  \"meetingAddress\": \"Pyramids of Giza\",\n  \"meetingPoint\": {\n    \"type\": \"Point\",\n    \"coordinates\": [31.1342, 29.9765]\n  },\n  \"itinerary\": [],\n  \"createdFromPlaceId\": \"optional_place_id\"\n}\n```\n\n**Expected Response:**\n- Status: 201 Created\n- Trip status: `awaiting_guide_selection`\n- Trip ID saved to `{{trip_id}}`\n\n**cURL Example:**\n```bash\ncurl -X POST {{base_url}}/api/tourist/trips \\\n  -H 'Authorization: Bearer {{tourist_token}}' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"startAt\": \"2025-12-20T09:00:00Z\",\n    \"meetingAddress\": \"Pyramids of Giza\",\n    \"meetingPoint\": {\"type\": \"Point\", \"coordinates\": [31.1342, 29.9765]}\n  }'\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "2. Get Trip-Compatible Guides",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Save first guide ID automatically",
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Compatible guides found', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.success).to.be.true;",
+									"    pm.expect(response.data.guides).to.be.an('array');",
+									"    pm.expect(response.data.guides.length).to.be.greaterThan(0);",
+									"    ",
+									"    // Auto-save first guide ID",
+									"    const firstGuide = response.data.guides[0];",
+									"    pm.collectionVariables.set('guide_id', firstGuide._id);",
+									"    ",
+									"    console.log('✅ Found', response.data.guides.length, 'compatible guides');",
+									"    console.log('Selected Guide ID:', firstGuide._id);",
+									"    console.log('Guide Name:', firstGuide.fullName);",
+									"    console.log('Languages:', firstGuide.languages);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tourist_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/tourist/trips/{{trip_id}}/guides",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tourist", "trips", "{{trip_id}}", "guides"]
+						},
+						"description": "**Step 2: Browse guides compatible with the trip**\n\nRetrieves list of guides who:\n- Operate in the trip's province\n- Speak required languages\n- Are available and verified\n\n**Path Parameters:**\n- `trip_id` - The trip ID (auto-saved from Step 1)\n\n**Expected Response:**\n- Status: 200 OK\n- Array of compatible guides\n- First guide ID saved to `{{guide_id}}`\n\n**Response Example:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"guides\": [\n      {\n        \"_id\": \"guide_id_123\",\n        \"fullName\": \"Ahmed Hassan\",\n        \"languages\": [\"Arabic\", \"English\"],\n        \"profilePicture\": \"url\",\n        \"rating\": 4.8,\n        \"totalTrips\": 45\n      }\n    ]\n  }\n}\n```\n\n**cURL Example:**\n```bash\ncurl -X GET {{base_url}}/api/tourist/trips/{{trip_id}}/guides \\\n  -H 'Authorization: Bearer {{tourist_token}}'\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "3. Select Guide",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify guide selection",
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Guide selected successfully', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.success).to.be.true;",
+									"    pm.expect(response.data.trip).to.exist;",
+									"    pm.expect(response.data.trip.guide).to.exist;",
+									"    ",
+									"    console.log('✅ Guide selected');",
+									"    console.log('Trip ID:', response.data.trip._id);",
+									"    console.log('Guide ID:', response.data.trip.guide);",
+									"    console.log('Status:', response.data.trip.status);",
+									"});",
+									"",
+									"pm.test('Trip status is awaiting_call', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.trip.status).to.equal('awaiting_call');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tourist_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"guideId\": \"{{guide_id}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tourist/trips/{{trip_id}}/select-guide",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tourist", "trips", "{{trip_id}}", "select-guide"]
+						},
+						"description": "**Step 3: Select a guide for the trip**\n\nTourist selects one of the compatible guides.\n\n**Path Parameters:**\n- `trip_id` - The trip ID (auto-saved from Step 1)\n\n**Request Body:**\n```json\n{\n  \"guideId\": \"{{guide_id}}\"\n}\n```\n\n**Expected Response:**\n- Status: 200 OK\n- Trip status: `awaiting_call`\n- Guide linked to trip\n\n**Response Example:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"trip\": {\n      \"_id\": \"trip_id_123\",\n      \"guide\": \"guide_id_456\",\n      \"status\": \"awaiting_call\",\n      \"meetingAddress\": \"Pyramids of Giza\"\n    }\n  }\n}\n```\n\n**cURL Example:**\n```bash\ncurl -X POST {{base_url}}/api/tourist/trips/{{trip_id}}/select-guide \\\n  -H 'Authorization: Bearer {{tourist_token}}' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"guideId\": \"{{guide_id}}\"}'\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "4. Initiate Trip-Based Call",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Save call ID automatically",
+									"pm.test('Status code is 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Call initiated successfully', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.success).to.be.true;",
+									"    pm.expect(response.data.call).to.exist;",
+									"    pm.expect(response.data.call._id).to.exist;",
+									"    pm.expect(response.data.agoraToken).to.exist;",
+									"    ",
+									"    // Auto-save call ID and token",
+									"    pm.collectionVariables.set('call_id', response.data.call._id);",
+									"    pm.collectionVariables.set('agora_token', response.data.agoraToken);",
+									"    ",
+									"    console.log('✅ Call initiated');",
+									"    console.log('Call ID:', response.data.call._id);",
+									"    console.log('Trip ID:', response.data.call.trip);",
+									"    console.log('Channel Name:', response.data.call.channelName);",
+									"    console.log('Agora Token:', response.data.agoraToken.substring(0, 30) + '...');",
+									"});",
+									"",
+									"pm.test('Trip status is in_call', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.trip.status).to.equal('in_call');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tourist_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trips/{{trip_id}}/calls/initiate",
+							"host": ["{{base_url}}"],
+							"path": ["api", "trips", "{{trip_id}}", "calls", "initiate"]
+						},
+						"description": "**Step 4: Initiate a trip-based video call**\n\nStarts a video call session with the selected guide using Agora.io.\n\n**Key Point:** This is a TRIP-BASED call, not a standalone call.\n\n**Path Parameters:**\n- `trip_id` - The trip ID (auto-saved from Step 1)\n\n**Expected Response:**\n- Status: 201 Created\n- Call ID saved to `{{call_id}}`\n- Agora token provided\n- Trip status: `in_call`\n\n**Response Example:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"call\": {\n      \"_id\": \"call_id_789\",\n      \"trip\": \"trip_id_123\",\n      \"channelName\": \"trip_123_call\",\n      \"status\": \"active\"\n    },\n    \"agoraToken\": \"agora_token_here\",\n    \"trip\": {\n      \"_id\": \"trip_id_123\",\n      \"status\": \"in_call\"\n    }\n  }\n}\n```\n\n**cURL Example:**\n```bash\ncurl -X POST {{base_url}}/api/trips/{{trip_id}}/calls/initiate \\\n  -H 'Authorization: Bearer {{tourist_token}}' \\\n  -H 'Content-Type: application/json' \\\n  -d '{}'\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "5. End Call (Summary + Negotiated Price)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify call ended with summary and price",
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Call ended successfully', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.success).to.be.true;",
+									"    pm.expect(response.data.call).to.exist;",
+									"    pm.expect(response.data.call.summary).to.exist;",
+									"    pm.expect(response.data.call.negotiatedPrice).to.exist;",
+									"    ",
+									"    console.log('✅ Call ended');",
+									"    console.log('Call ID:', response.data.call._id);",
+									"    console.log('Summary:', response.data.call.summary);",
+									"    console.log('Negotiated Price:', response.data.call.negotiatedPrice);",
+									"    console.log('Duration:', response.data.call.duration, 'seconds');",
+									"});",
+									"",
+									"pm.test('Trip status is awaiting_guide_confirmation', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.trip.status).to.equal('awaiting_guide_confirmation');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tourist_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"endReason\": \"completed\",\n  \"summary\": \"Successfully negotiated trip details. Guide agreed to visit Pyramids, Egyptian Museum, and Khan El Khalili. Discussed safety protocols and meeting logistics.\",\n  \"negotiatedPrice\": 400\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/calls/{{call_id}}/end",
+							"host": ["{{base_url}}"],
+							"path": ["api", "calls", "{{call_id}}", "end"]
+						},
+						"description": "**Step 5: End the call with summary and negotiated price**\n\nEnds the video call and saves the negotiation results.\n\n**Key Point:** MUST include `summary` and `negotiatedPrice`.\n\n**Path Parameters:**\n- `call_id` - The call ID (auto-saved from Step 4)\n\n**Request Body:**\n```json\n{\n  \"endReason\": \"completed\",\n  \"summary\": \"Negotiated trip details successfully\",\n  \"negotiatedPrice\": 400\n}\n```\n\n**Expected Response:**\n- Status: 200 OK\n- Call status: `ended`\n- Trip status: `awaiting_guide_confirmation`\n- Summary and price saved\n\n**Response Example:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"call\": {\n      \"_id\": \"call_id_789\",\n      \"status\": \"ended\",\n      \"summary\": \"Negotiated successfully\",\n      \"negotiatedPrice\": 400,\n      \"duration\": 180\n    },\n    \"trip\": {\n      \"_id\": \"trip_id_123\",\n      \"status\": \"awaiting_guide_confirmation\"\n    }\n  }\n}\n```\n\n**cURL Example:**\n```bash\ncurl -X POST {{base_url}}/api/calls/{{call_id}}/end \\\n  -H 'Authorization: Bearer {{tourist_token}}' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"endReason\": \"completed\",\n    \"summary\": \"Negotiated successfully\",\n    \"negotiatedPrice\": 400\n  }'\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "6. Guide Accept Trip",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify guide accepted trip",
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Trip accepted by guide', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.success).to.be.true;",
+									"    pm.expect(response.data.trip).to.exist;",
+									"    pm.expect(response.data.trip.finalPrice).to.exist;",
+									"    ",
+									"    console.log('✅ Trip accepted by guide');",
+									"    console.log('Trip ID:', response.data.trip._id);",
+									"    console.log('Status:', response.data.trip.status);",
+									"    console.log('Final Price:', response.data.trip.finalPrice);",
+									"});",
+									"",
+									"pm.test('Trip status is confirmed', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.trip.status).to.equal('confirmed');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{guide_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"finalPrice\": 400\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/guide/trips/{{trip_id}}/accept",
+							"host": ["{{base_url}}"],
+							"path": ["api", "guide", "trips", "{{trip_id}}", "accept"]
+						},
+						"description": "**Step 6a: Guide accepts the trip**\n\nGuide confirms they will take the trip at the negotiated price.\n\n**Authorization:** Requires GUIDE token (not tourist)\n\n**Path Parameters:**\n- `trip_id` - The trip ID (auto-saved from Step 1)\n\n**Request Body:**\n```json\n{\n  \"finalPrice\": 400\n}\n```\n\n**Expected Response:**\n- Status: 200 OK\n- Trip status: `confirmed`\n- Final price set\n\n**Response Example:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"trip\": {\n      \"_id\": \"trip_id_123\",\n      \"status\": \"confirmed\",\n      \"finalPrice\": 400,\n      \"guide\": \"guide_id_456\",\n      \"tourist\": \"tourist_id_789\"\n    }\n  }\n}\n```\n\n**cURL Example:**\n```bash\ncurl -X PUT {{base_url}}/api/guide/trips/{{trip_id}}/accept \\\n  -H 'Authorization: Bearer {{guide_token}}' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"finalPrice\": 400}'\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "7. Guide Reject Trip",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify guide rejected trip",
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Trip rejected by guide', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.success).to.be.true;",
+									"    pm.expect(response.data.trip).to.exist;",
+									"    pm.expect(response.data.trip.rejectionReason).to.exist;",
+									"    ",
+									"    console.log('✅ Trip rejected by guide');",
+									"    console.log('Trip ID:', response.data.trip._id);",
+									"    console.log('Status:', response.data.trip.status);",
+									"    console.log('Rejection Reason:', response.data.trip.rejectionReason);",
+									"});",
+									"",
+									"pm.test('Trip status is rejected_by_guide', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.trip.status).to.equal('rejected_by_guide');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{guide_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reason\": \"Not available on that date. Please select another guide or reschedule.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/guide/trips/{{trip_id}}/reject",
+							"host": ["{{base_url}}"],
+							"path": ["api", "guide", "trips", "{{trip_id}}", "reject"]
+						},
+						"description": "**Step 6b: Guide rejects the trip (Alternative to Accept)**\n\nGuide declines the trip and provides a reason.\n\n**Authorization:** Requires GUIDE token (not tourist)\n\n**Path Parameters:**\n- `trip_id` - The trip ID (auto-saved from Step 1)\n\n**Request Body:**\n```json\n{\n  \"reason\": \"Not available on that date\"\n}\n```\n\n**Expected Response:**\n- Status: 200 OK\n- Trip status: `rejected_by_guide`\n- Rejection reason saved\n\n**Response Example:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"trip\": {\n      \"_id\": \"trip_id_123\",\n      \"status\": \"rejected_by_guide\",\n      \"rejectionReason\": \"Not available\",\n      \"guide\": \"guide_id_456\"\n    }\n  }\n}\n```\n\n**Note:** Tourist can then select a different guide and retry.\n\n**cURL Example:**\n```bash\ncurl -X PUT {{base_url}}/api/guide/trips/{{trip_id}}/reject \\\n  -H 'Authorization: Bearer {{guide_token}}' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"reason\": \"Not available on that date\"}'\n```"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "References",
+			"description": "Utility endpoints for fetching reference data",
+			"item": [
+				{
+					"name": "Get Places",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tourist_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/places?province=giza",
+							"host": ["{{base_url}}"],
+							"path": ["api", "places"],
+							"query": [
+								{
+									"key": "province",
+									"value": "giza"
+								}
+							]
+						},
+						"description": "Get list of tourist places/attractions.\n\n**Query Parameters:**\n- `province` - Filter by province (e.g., giza, cairo, luxor)\n- `limit` - Number of results (default: 20)\n- `page` - Page number (default: 1)\n\n**cURL Example:**\n```bash\ncurl -X GET '{{base_url}}/api/places?province=giza' \\\n  -H 'Authorization: Bearer {{tourist_token}}'\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Guide Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tourist_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/guides/{{guide_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "guides", "{{guide_id}}"]
+						},
+						"description": "Get detailed guide profile information.\n\n**Path Parameters:**\n- `guide_id` - The guide's user ID\n\n**cURL Example:**\n```bash\ncurl -X GET {{base_url}}/api/guides/{{guide_id}} \\\n  -H 'Authorization: Bearer {{tourist_token}}'\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Trip Details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tourist_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/tourist/trips/{{trip_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tourist", "trips", "{{trip_id}}"]
+						},
+						"description": "Get complete trip details including status, guide, call history, etc.\n\n**Path Parameters:**\n- `trip_id` - The trip ID\n\n**cURL Example:**\n```bash\ncurl -X GET {{base_url}}/api/tourist/trips/{{trip_id}} \\\n  -H 'Authorization: Bearer {{tourist_token}}'\n```"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:5000",
+			"type": "string"
+		},
+		{
+			"key": "tourist_email",
+			"value": "tourist@test.com",
+			"type": "string"
+		},
+		{
+			"key": "tourist_password",
+			"value": "password123",
+			"type": "string"
+		},
+		{
+			"key": "guide_email",
+			"value": "guide@test.com",
+			"type": "string"
+		},
+		{
+			"key": "guide_password",
+			"value": "password123",
+			"type": "string"
+		},
+		{
+			"key": "place_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "tourist_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "guide_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "tourist_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "guide_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "trip_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "call_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "agora_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

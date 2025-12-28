@@ -1,0 +1,970 @@
+{
+  "info": {
+    "name": "LocalGuide API",
+    "description": "Complete API collection for LocalGuide platform - Tourist and Guide management system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "guideId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "tripId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register Tourist",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('userId', response.userId);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"tourist@example.com\",\n  \"password\": \"password123\",\n  \"name\": \"John Tourist\",\n  \"phone\": \"+1234567890\",\n  \"role\": \"tourist\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Verify OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"tourist@example.com\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/verify-otp",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "verify-otp"]
+            }
+          }
+        },
+        {
+          "name": "Resend OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"tourist@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/resend-otp",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "resend-otp"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', response.data.accessToken);",
+                  "    pm.collectionVariables.set('refreshToken', response.data.refreshToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"tourist@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', response.data.accessToken);",
+                  "    pm.collectionVariables.set('refreshToken', response.data.refreshToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh"]
+            }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"password123\",\n  \"newPassword\": \"newpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/change-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "change-password"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Guide",
+      "item": [
+        {
+          "name": "Apply as Guide",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('guideId', response.guide._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "languages",
+                  "value": "English",
+                  "type": "text"
+                },
+                {
+                  "key": "languages",
+                  "value": "Arabic",
+                  "type": "text"
+                },
+                {
+                  "key": "pricePerHour",
+                  "value": "50",
+                  "type": "text"
+                },
+                {
+                  "key": "bio",
+                  "value": "Experienced guide with 5 years of experience",
+                  "type": "text"
+                },
+                {
+                  "key": "isLicensed",
+                  "value": "true",
+                  "type": "text"
+                },
+                {
+                  "key": "idDocument",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "tourismCard",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "englishCertificate",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/guide/apply",
+              "host": ["{{baseUrl}}"],
+              "path": ["guide", "apply"]
+            }
+          }
+        },
+        {
+          "name": "Get Guide Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/guide/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["guide", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Update Guide Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"languages\": [\"English\", \"Arabic\", \"French\"],\n  \"pricePerHour\": 60,\n  \"bio\": \"Updated bio with more experience\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/guide/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["guide", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Upload Document",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "type",
+                  "value": "other",
+                  "type": "text"
+                },
+                {
+                  "key": "document",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/guide/documents",
+              "host": ["{{baseUrl}}"],
+              "path": ["guide", "documents"]
+            }
+          }
+        },
+        {
+          "name": "Get Guide Documents",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/guide/documents",
+              "host": ["{{baseUrl}}"],
+              "path": ["guide", "documents"]
+            }
+          }
+        },
+        {
+          "name": "Delete Document",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/guide/documents/:documentId",
+              "host": ["{{baseUrl}}"],
+              "path": ["guide", "documents", ":documentId"],
+              "variable": [
+                {
+                  "key": "documentId",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Guide Trips",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/guide/trips",
+              "host": ["{{baseUrl}}"],
+              "path": ["guide", "trips"]
+            }
+          }
+        },
+        {
+          "name": "Accept Trip",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/guide/trips/:tripId/accept",
+              "host": ["{{baseUrl}}"],
+              "path": ["guide", "trips", ":tripId", "accept"],
+              "variable": [
+                {
+                  "key": "tripId",
+                  "value": "{{tripId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reject Trip",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/guide/trips/:tripId/reject",
+              "host": ["{{baseUrl}}"],
+              "path": ["guide", "trips", ":tripId", "reject"],
+              "variable": [
+                {
+                  "key": "tripId",
+                  "value": "{{tripId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Complete Trip",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/guide/trips/:tripId/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["guide", "trips", ":tripId", "complete"],
+              "variable": [
+                {
+                  "key": "tripId",
+                  "value": "{{tripId}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tourist",
+      "item": [
+        {
+          "name": "Get Tourist Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tourist/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["tourist", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Update Tourist Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "John Updated",
+                  "type": "text"
+                },
+                {
+                  "key": "phone",
+                  "value": "+9876543210",
+                  "type": "text"
+                },
+                {
+                  "key": "avatar",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tourist/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["tourist", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Browse Guides",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tourist/guides?language=English&priceMin=20&priceMax=100",
+              "host": ["{{baseUrl}}"],
+              "path": ["tourist", "guides"],
+              "query": [
+                {
+                  "key": "language",
+                  "value": "English"
+                },
+                {
+                  "key": "priceMin",
+                  "value": "20"
+                },
+                {
+                  "key": "priceMax",
+                  "value": "100"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Guide Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tourist/guides/:guideId",
+              "host": ["{{baseUrl}}"],
+              "path": ["tourist", "guides", ":guideId"],
+              "variable": [
+                {
+                  "key": "guideId",
+                  "value": "{{guideId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Browse Attractions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tourist/attractions?city=Giza",
+              "host": ["{{baseUrl}}"],
+              "path": ["tourist", "attractions"],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "Giza"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Trip",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('tripId', response.trip._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"guideId\": \"{{guideId}}\",\n  \"startAt\": \"2024-12-25T10:00:00Z\",\n  \"durationHours\": 4,\n  \"meetingPoint\": {\n    \"coordinates\": [31.2357, 30.0444],\n    \"address\": \"Pyramids of Giza Entrance\"\n  },\n  \"notes\": \"Interested in ancient Egyptian history\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tourist/trips",
+              "host": ["{{baseUrl}}"],
+              "path": ["tourist", "trips"]
+            }
+          }
+        },
+        {
+          "name": "Get Tourist Trips",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tourist/trips",
+              "host": ["{{baseUrl}}"],
+              "path": ["tourist", "trips"]
+            }
+          }
+        },
+        {
+          "name": "Get Trip Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tourist/trips/:tripId",
+              "host": ["{{baseUrl}}"],
+              "path": ["tourist", "trips", ":tripId"],
+              "variable": [
+                {
+                  "key": "tripId",
+                  "value": "{{tripId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cancel Trip",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Change of plans\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tourist/trips/:tripId/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["tourist", "trips", ":tripId", "cancel"],
+              "variable": [
+                {
+                  "key": "tripId",
+                  "value": "{{tripId}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Get Pending Guides",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/guides/pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "guides", "pending"]
+            }
+          }
+        },
+        {
+          "name": "Get Guide Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/guides/:guideId",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "guides", ":guideId"],
+              "variable": [
+                {
+                  "key": "guideId",
+                  "value": "{{guideId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Guide Documents",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/guides/:guideId/documents",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "guides", ":guideId", "documents"],
+              "variable": [
+                {
+                  "key": "guideId",
+                  "value": "{{guideId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Approve Document",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documentId\": \"document_id_here\",\n  \"status\": \"approved\",\n  \"note\": \"All documents verified successfully\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/guides/:guideId/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "guides", ":guideId", "verify"],
+              "variable": [
+                {
+                  "key": "guideId",
+                  "value": "{{guideId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reject Document",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documentId\": \"document_id_here\",\n  \"status\": \"rejected\",\n  \"note\": \"Document is not clear, please reupload\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/guides/:guideId/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "guides", ":guideId", "verify"],
+              "variable": [
+                {
+                  "key": "guideId",
+                  "value": "{{guideId}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Attractions (Public)",
+      "item": [
+        {
+          "name": "Get All Attractions",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/attractions?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["attractions"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Attraction by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/attractions/:attractionId",
+              "host": ["{{baseUrl}}"],
+              "path": ["attractions", ":attractionId"],
+              "variable": [
+                {
+                  "key": "attractionId",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:5000/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["health"]
+        }
+      }
+    }
+  ]
+}

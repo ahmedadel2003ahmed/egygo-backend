@@ -1,0 +1,1331 @@
+[
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439011"},
+    "name": "Ahmed Hassan",
+    "slug": "ahmed-hassan",
+    "bio": "Expert Egyptologist specializing in Pharaonic history and ancient temples across Upper Egypt.",
+    "pricePerHour": 25,
+    "languages": ["Arabic", "English", "French", "German"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e301"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e302"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e303"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e301"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+      "publicId": "guides/ahmed_hassan_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6",
+        "publicId": "guides/ahmed_hassan_1",
+        "uploadedAt": "2024-01-15T10:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d",
+        "publicId": "guides/ahmed_hassan_2",
+        "uploadedAt": "2024-01-16T11:45:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
+        "publicId": "guides/ahmed_hassan_3",
+        "uploadedAt": "2024-01-17T09:20:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7",
+        "publicId": "guides/ahmed_hassan_4",
+        "uploadedAt": "2024-01-18T14:30:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [31.2357, 30.0444]
+    },
+    "isVerified": true,
+    "isLicensed": true,
+    "canEnterArchaeologicalSites": true,
+    "rating": 4.8,
+    "ratingCount": 127,
+    "totalTrips": 156,
+    "experienceYears": 12,
+    "isActive": true,
+    "createdAt": "2023-06-10T08:00:00.000Z",
+    "updatedAt": "2024-12-01T15:30:00.000Z"
+  },
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439012"},
+    "name": "Fatima El-Sayed",
+    "slug": "fatima-el-sayed",
+    "bio": "Passionate about Islamic Cairo and medieval architecture with deep knowledge of Coptic heritage.",
+    "pricePerHour": 22,
+    "languages": ["Arabic", "English", "Spanish"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e304"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e305"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e304"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+      "publicId": "guides/fatima_elsayed_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80",
+        "publicId": "guides/fatima_elsayed_1",
+        "uploadedAt": "2024-02-10T10:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f",
+        "publicId": "guides/fatima_elsayed_2",
+        "uploadedAt": "2024-02-11T11:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb",
+        "publicId": "guides/fatima_elsayed_3",
+        "uploadedAt": "2024-02-12T13:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1517841905240-472988babdf9",
+        "publicId": "guides/fatima_elsayed_4",
+        "uploadedAt": "2024-02-13T14:45:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [31.2497, 30.0626]
+    },
+    "isVerified": true,
+    "isLicensed": true,
+    "canEnterArchaeologicalSites": true,
+    "rating": 4.9,
+    "ratingCount": 98,
+    "totalTrips": 112,
+    "experienceYears": 8,
+    "isActive": true,
+    "createdAt": "2023-08-20T09:00:00.000Z",
+    "updatedAt": "2024-12-05T10:15:00.000Z"
+  },
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439013"},
+    "name": "Mohamed Abdel-Rahman",
+    "slug": "mohamed-abdel-rahman",
+    "bio": "Alexandria specialist with expertise in Greco-Roman history and Mediterranean culture.",
+    "pricePerHour": 20,
+    "languages": ["Arabic", "English", "Italian", "French"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e306"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e307"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e306"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e",
+      "publicId": "guides/mohamed_abdelrahman_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1463453091185-61582044d556",
+        "publicId": "guides/mohamed_abdelrahman_1",
+        "uploadedAt": "2024-03-05T08:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d",
+        "publicId": "guides/mohamed_abdelrahman_2",
+        "uploadedAt": "2024-03-06T09:45:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+        "publicId": "guides/mohamed_abdelrahman_3",
+        "uploadedAt": "2024-03-07T11:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
+        "publicId": "guides/mohamed_abdelrahman_4",
+        "uploadedAt": "2024-03-08T12:15:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [29.9187, 31.2001]
+    },
+    "isVerified": true,
+    "isLicensed": true,
+    "canEnterArchaeologicalSites": false,
+    "rating": 4.6,
+    "ratingCount": 84,
+    "totalTrips": 95,
+    "experienceYears": 10,
+    "isActive": true,
+    "createdAt": "2023-05-15T10:30:00.000Z",
+    "updatedAt": "2024-11-28T16:20:00.000Z"
+  },
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439014"},
+    "name": "Nour El-Din",
+    "slug": "nour-el-din",
+    "bio": "Luxor expert focusing on Valley of the Kings and Karnak Temple with 15 years experience.",
+    "pricePerHour": 28,
+    "languages": ["Arabic", "English", "German", "Russian"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e308"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e309"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e30a"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e308"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7",
+      "publicId": "guides/nour_eldin_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce",
+        "publicId": "guides/nour_eldin_1",
+        "uploadedAt": "2024-04-01T07:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1496345875659-11f7dd282d1d",
+        "publicId": "guides/nour_eldin_2",
+        "uploadedAt": "2024-04-02T08:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1504593811423-6dd665756598",
+        "publicId": "guides/nour_eldin_3",
+        "uploadedAt": "2024-04-03T10:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+        "publicId": "guides/nour_eldin_4",
+        "uploadedAt": "2024-04-04T11:30:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [32.6421, 25.6872]
+    },
+    "isVerified": true,
+    "isLicensed": true,
+    "canEnterArchaeologicalSites": true,
+    "rating": 5.0,
+    "ratingCount": 203,
+    "totalTrips": 245,
+    "experienceYears": 15,
+    "isActive": true,
+    "createdAt": "2023-01-05T07:00:00.000Z",
+    "updatedAt": "2024-12-10T18:00:00.000Z"
+  },
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439015"},
+    "name": "Layla Ibrahim",
+    "slug": "layla-ibrahim",
+    "bio": "Red Sea diving guide and coastal tourism specialist with marine archaeology knowledge.",
+    "pricePerHour": 18,
+    "languages": ["Arabic", "English", "Russian"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e30b"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e30c"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e30b"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb",
+      "publicId": "guides/layla_ibrahim_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1",
+        "publicId": "guides/layla_ibrahim_1",
+        "uploadedAt": "2024-05-10T09:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df",
+        "publicId": "guides/layla_ibrahim_2",
+        "uploadedAt": "2024-05-11T10:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1503185912284-5271ff81b9a8",
+        "publicId": "guides/layla_ibrahim_3",
+        "uploadedAt": "2024-05-12T12:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91",
+        "publicId": "guides/layla_ibrahim_4",
+        "uploadedAt": "2024-05-13T13:30:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [33.8116, 27.2579]
+    },
+    "isVerified": true,
+    "isLicensed": false,
+    "canEnterArchaeologicalSites": false,
+    "rating": 4.7,
+    "ratingCount": 65,
+    "totalTrips": 78,
+    "experienceYears": 6,
+    "isActive": true,
+    "createdAt": "2023-09-12T11:00:00.000Z",
+    "updatedAt": "2024-12-03T09:45:00.000Z"
+  },
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439016"},
+    "name": "Khaled Mostafa",
+    "slug": "khaled-mostafa",
+    "bio": "Giza Pyramids specialist with deep knowledge of pyramid construction and ancient engineering.",
+    "pricePerHour": 30,
+    "languages": ["Arabic", "English", "Chinese"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e30d"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e30e"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e30d"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d",
+      "publicId": "guides/khaled_mostafa_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
+        "publicId": "guides/khaled_mostafa_1",
+        "uploadedAt": "2024-06-01T08:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1463453091185-61582044d556",
+        "publicId": "guides/khaled_mostafa_2",
+        "uploadedAt": "2024-06-02T09:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e",
+        "publicId": "guides/khaled_mostafa_3",
+        "uploadedAt": "2024-06-03T11:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7",
+        "publicId": "guides/khaled_mostafa_4",
+        "uploadedAt": "2024-06-04T12:30:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [31.1342, 29.9792]
+    },
+    "isVerified": true,
+    "isLicensed": true,
+    "canEnterArchaeologicalSites": true,
+    "rating": 4.9,
+    "ratingCount": 312,
+    "totalTrips": 387,
+    "experienceYears": 18,
+    "isActive": true,
+    "createdAt": "2022-11-01T06:00:00.000Z",
+    "updatedAt": "2024-12-09T20:15:00.000Z"
+  },
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439017"},
+    "name": "Sara Fahmy",
+    "slug": "sara-fahmy",
+    "bio": "Cultural tourism expert specializing in Egyptian cuisine, handicrafts, and local traditions.",
+    "pricePerHour": 15,
+    "languages": ["Arabic", "English", "French"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e30f"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e310"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e30f"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1544005313-94ddf0286df2",
+      "publicId": "guides/sara_fahmy_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f",
+        "publicId": "guides/sara_fahmy_1",
+        "uploadedAt": "2024-07-15T10:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1517841905240-472988babdf9",
+        "publicId": "guides/sara_fahmy_2",
+        "uploadedAt": "2024-07-16T11:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+        "publicId": "guides/sara_fahmy_3",
+        "uploadedAt": "2024-07-17T13:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80",
+        "publicId": "guides/sara_fahmy_4",
+        "uploadedAt": "2024-07-18T14:30:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [31.2653, 30.0561]
+    },
+    "isVerified": false,
+    "isLicensed": false,
+    "canEnterArchaeologicalSites": false,
+    "rating": 4.4,
+    "ratingCount": 42,
+    "totalTrips": 51,
+    "experienceYears": 4,
+    "isActive": true,
+    "createdAt": "2024-02-28T12:00:00.000Z",
+    "updatedAt": "2024-11-30T14:00:00.000Z"
+  },
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439018"},
+    "name": "Omar Salah",
+    "slug": "omar-salah",
+    "bio": "Aswan and Nubian heritage specialist with focus on Abu Simbel temples and Philae.",
+    "pricePerHour": 24,
+    "languages": ["Arabic", "English", "German", "Spanish"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e311"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e312"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e313"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e311"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce",
+      "publicId": "guides/omar_salah_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1496345875659-11f7dd282d1d",
+        "publicId": "guides/omar_salah_1",
+        "uploadedAt": "2024-08-05T07:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1504593811423-6dd665756598",
+        "publicId": "guides/omar_salah_2",
+        "uploadedAt": "2024-08-06T09:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+        "publicId": "guides/omar_salah_3",
+        "uploadedAt": "2024-08-07T10:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7",
+        "publicId": "guides/omar_salah_4",
+        "uploadedAt": "2024-08-08T12:00:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [32.8998, 24.0889]
+    },
+    "isVerified": true,
+    "isLicensed": true,
+    "canEnterArchaeologicalSites": true,
+    "rating": 4.8,
+    "ratingCount": 145,
+    "totalTrips": 168,
+    "experienceYears": 11,
+    "isActive": true,
+    "createdAt": "2023-03-18T08:30:00.000Z",
+    "updatedAt": "2024-12-07T17:45:00.000Z"
+  },
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439019"},
+    "name": "Yasmin Kamel",
+    "slug": "yasmin-kamel",
+    "bio": "Modern Cairo guide focusing on contemporary art, urban culture, and hidden local gems.",
+    "pricePerHour": 16,
+    "languages": ["Arabic", "English", "Italian"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e314"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e315"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e314"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb",
+      "publicId": "guides/yasmin_kamel_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91",
+        "publicId": "guides/yasmin_kamel_1",
+        "uploadedAt": "2024-09-10T11:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1503185912284-5271ff81b9a8",
+        "publicId": "guides/yasmin_kamel_2",
+        "uploadedAt": "2024-09-11T12:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb",
+        "publicId": "guides/yasmin_kamel_3",
+        "uploadedAt": "2024-09-12T14:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1",
+        "publicId": "guides/yasmin_kamel_4",
+        "uploadedAt": "2024-09-13T15:30:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [31.2234, 30.0333]
+    },
+    "isVerified": true,
+    "isLicensed": false,
+    "canEnterArchaeologicalSites": false,
+    "rating": 4.5,
+    "ratingCount": 56,
+    "totalTrips": 67,
+    "experienceYears": 5,
+    "isActive": true,
+    "createdAt": "2023-10-22T13:00:00.000Z",
+    "updatedAt": "2024-12-02T11:20:00.000Z"
+  },
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439020"},
+    "name": "Hussein Abdallah",
+    "slug": "hussein-abdallah",
+    "bio": "Sinai Peninsula expert covering St. Catherine Monastery, Mount Sinai, and Bedouin culture.",
+    "pricePerHour": 21,
+    "languages": ["Arabic", "English", "Russian", "German"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e316"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e317"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e316"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
+      "publicId": "guides/hussein_abdallah_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1463453091185-61582044d556",
+        "publicId": "guides/hussein_abdallah_1",
+        "uploadedAt": "2024-10-01T08:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e",
+        "publicId": "guides/hussein_abdallah_2",
+        "uploadedAt": "2024-10-02T09:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce",
+        "publicId": "guides/hussein_abdallah_3",
+        "uploadedAt": "2024-10-03T11:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d",
+        "publicId": "guides/hussein_abdallah_4",
+        "uploadedAt": "2024-10-04T12:30:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [34.3917, 28.5383]
+    },
+    "isVerified": true,
+    "isLicensed": true,
+    "canEnterArchaeologicalSites": true,
+    "rating": 4.7,
+    "ratingCount": 89,
+    "totalTrips": 103,
+    "experienceYears": 9,
+    "isActive": true,
+    "createdAt": "2023-04-07T09:00:00.000Z",
+    "updatedAt": "2024-11-25T13:40:00.000Z"
+  },
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439021"},
+    "name": "Mariam Tawfik",
+    "slug": "mariam-tawfik",
+    "bio": "Specialist in Egyptian Museum collections, hieroglyphics, and pharaonic art history.",
+    "pricePerHour": 26,
+    "languages": ["Arabic", "English", "French", "Italian"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e318"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e319"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e31a"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e318"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df",
+      "publicId": "guides/mariam_tawfik_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1517841905240-472988babdf9",
+        "publicId": "guides/mariam_tawfik_1",
+        "uploadedAt": "2024-11-01T10:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f",
+        "publicId": "guides/mariam_tawfik_2",
+        "uploadedAt": "2024-11-02T11:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+        "publicId": "guides/mariam_tawfik_3",
+        "uploadedAt": "2024-11-03T13:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80",
+        "publicId": "guides/mariam_tawfik_4",
+        "uploadedAt": "2024-11-04T14:30:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [31.2336, 30.0478]
+    },
+    "isVerified": true,
+    "isLicensed": true,
+    "canEnterArchaeologicalSites": true,
+    "rating": 4.9,
+    "ratingCount": 176,
+    "totalTrips": 198,
+    "experienceYears": 13,
+    "isActive": true,
+    "createdAt": "2023-02-14T07:30:00.000Z",
+    "updatedAt": "2024-12-08T19:00:00.000Z"
+  },
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439022"},
+    "name": "Tarek Soliman",
+    "slug": "tarek-soliman",
+    "bio": "Adventure tourism guide for desert safaris, oasis tours, and White Desert excursions.",
+    "pricePerHour": 19,
+    "languages": ["Arabic", "English", "Spanish"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e31b"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e31c"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e31b"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1504593811423-6dd665756598",
+      "publicId": "guides/tarek_soliman_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1496345875659-11f7dd282d1d",
+        "publicId": "guides/tarek_soliman_1",
+        "uploadedAt": "2024-01-20T08:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce",
+        "publicId": "guides/tarek_soliman_2",
+        "uploadedAt": "2024-01-21T10:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7",
+        "publicId": "guides/tarek_soliman_3",
+        "uploadedAt": "2024-01-22T11:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
+        "publicId": "guides/tarek_soliman_4",
+        "uploadedAt": "2024-01-23T13:00:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [28.5474, 27.1809]
+    },
+    "isVerified": true,
+    "isLicensed": false,
+    "canEnterArchaeologicalSites": false,
+    "rating": 4.6,
+    "ratingCount": 71,
+    "totalTrips": 85,
+    "experienceYears": 7,
+    "isActive": true,
+    "createdAt": "2023-07-25T10:00:00.000Z",
+    "updatedAt": "2024-11-29T12:30:00.000Z"
+  },
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439023"},
+    "name": "Dina Rashad",
+    "slug": "dina-rashad",
+    "bio": "Photography-focused tour guide helping capture Egypt's most iconic and hidden locations.",
+    "pricePerHour": 17,
+    "languages": ["Arabic", "English", "French"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e31d"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e31e"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e31d"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1503185912284-5271ff81b9a8",
+      "publicId": "guides/dina_rashad_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91",
+        "publicId": "guides/dina_rashad_1",
+        "uploadedAt": "2024-02-15T09:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb",
+        "publicId": "guides/dina_rashad_2",
+        "uploadedAt": "2024-02-16T10:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb",
+        "publicId": "guides/dina_rashad_3",
+        "uploadedAt": "2024-02-17T12:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1",
+        "publicId": "guides/dina_rashad_4",
+        "uploadedAt": "2024-02-18T13:30:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [31.2589, 30.0711]
+    },
+    "isVerified": false,
+    "isLicensed": false,
+    "canEnterArchaeologicalSites": false,
+    "rating": 4.3,
+    "ratingCount": 38,
+    "totalTrips": 45,
+    "experienceYears": 3,
+    "isActive": true,
+    "createdAt": "2024-03-10T14:00:00.000Z",
+    "updatedAt": "2024-12-01T10:15:00.000Z"
+  },
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439024"},
+    "name": "Youssef Nabil",
+    "slug": "youssef-nabil",
+    "bio": "Saqqara and Memphis expert focusing on Old Kingdom pyramids and early dynastic history.",
+    "pricePerHour": 27,
+    "languages": ["Arabic", "English", "German", "Chinese"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e31f"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e320"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e321"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e31f"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6",
+      "publicId": "guides/youssef_nabil_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+        "publicId": "guides/youssef_nabil_1",
+        "uploadedAt": "2024-03-20T08:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d",
+        "publicId": "guides/youssef_nabil_2",
+        "uploadedAt": "2024-03-21T09:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1463453091185-61582044d556",
+        "publicId": "guides/youssef_nabil_3",
+        "uploadedAt": "2024-03-22T11:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e",
+        "publicId": "guides/youssef_nabil_4",
+        "uploadedAt": "2024-03-23T12:30:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [31.2167, 29.8711]
+    },
+    "isVerified": true,
+    "isLicensed": true,
+    "canEnterArchaeologicalSites": true,
+    "rating": 4.8,
+    "ratingCount": 164,
+    "totalTrips": 189,
+    "experienceYears": 14,
+    "isActive": true,
+    "createdAt": "2023-01-28T06:30:00.000Z",
+    "updatedAt": "2024-12-06T16:45:00.000Z"
+  },
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439025"},
+    "name": "Heba Mansour",
+    "slug": "heba-mansour",
+    "bio": "Nile cruise specialist covering Luxor to Aswan route with temple and historical insights.",
+    "pricePerHour": 23,
+    "languages": ["Arabic", "English", "Russian", "Italian"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e322"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e323"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e322"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1544005313-94ddf0286df2",
+      "publicId": "guides/heba_mansour_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80",
+        "publicId": "guides/heba_mansour_1",
+        "uploadedAt": "2024-04-10T09:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f",
+        "publicId": "guides/heba_mansour_2",
+        "uploadedAt": "2024-04-11T11:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df",
+        "publicId": "guides/heba_mansour_3",
+        "uploadedAt": "2024-04-12T12:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1517841905240-472988babdf9",
+        "publicId": "guides/heba_mansour_4",
+        "uploadedAt": "2024-04-13T14:00:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [32.6396, 25.6989]
+    },
+    "isVerified": true,
+    "isLicensed": true,
+    "canEnterArchaeologicalSites": true,
+    "rating": 4.7,
+    "ratingCount": 118,
+    "totalTrips": 138,
+    "experienceYears": 10,
+    "isActive": true,
+    "createdAt": "2023-06-05T08:00:00.000Z",
+    "updatedAt": "2024-12-04T15:20:00.000Z"
+  },
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439026"},
+    "name": "Rami Yousri",
+    "slug": "rami-yousri",
+    "bio": "Dahab and South Sinai diving and adventure guide with marine biology expertise.",
+    "pricePerHour": 20,
+    "languages": ["Arabic", "English", "German"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e324"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e325"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e324"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1496345875659-11f7dd282d1d",
+      "publicId": "guides/rami_yousri_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce",
+        "publicId": "guides/rami_yousri_1",
+        "uploadedAt": "2024-05-15T10:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1504593811423-6dd665756598",
+        "publicId": "guides/rami_yousri_2",
+        "uploadedAt": "2024-05-16T11:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
+        "publicId": "guides/rami_yousri_3",
+        "uploadedAt": "2024-05-17T13:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7",
+        "publicId": "guides/rami_yousri_4",
+        "uploadedAt": "2024-05-18T14:30:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [34.5110, 28.5069]
+    },
+    "isVerified": true,
+    "isLicensed": false,
+    "canEnterArchaeologicalSites": false,
+    "rating": 4.6,
+    "ratingCount": 93,
+    "totalTrips": 108,
+    "experienceYears": 8,
+    "isActive": true,
+    "createdAt": "2023-08-12T11:00:00.000Z",
+    "updatedAt": "2024-11-27T13:50:00.000Z"
+  },
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439027"},
+    "name": "Salma Gamal",
+    "slug": "salma-gamal",
+    "bio": "Coptic Cairo and religious heritage specialist covering churches, monasteries, and history.",
+    "pricePerHour": 21,
+    "languages": ["Arabic", "English", "French", "Spanish"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e326"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e327"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e328"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e326"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1",
+      "publicId": "guides/salma_gamal_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb",
+        "publicId": "guides/salma_gamal_1",
+        "uploadedAt": "2024-06-20T08:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb",
+        "publicId": "guides/salma_gamal_2",
+        "uploadedAt": "2024-06-21T10:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91",
+        "publicId": "guides/salma_gamal_3",
+        "uploadedAt": "2024-06-22T11:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1503185912284-5271ff81b9a8",
+        "publicId": "guides/salma_gamal_4",
+        "uploadedAt": "2024-06-23T13:00:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [31.2304, 30.0059]
+    },
+    "isVerified": true,
+    "isLicensed": true,
+    "canEnterArchaeologicalSites": true,
+    "rating": 4.7,
+    "ratingCount": 102,
+    "totalTrips": 119,
+    "experienceYears": 9,
+    "isActive": true,
+    "createdAt": "2023-04-30T09:30:00.000Z",
+    "updatedAt": "2024-12-05T12:10:00.000Z"
+  },
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439028"},
+    "name": "Karim Adel",
+    "slug": "karim-adel",
+    "bio": "Port cities expert covering Alexandria, Port Said, and Suez Canal history and maritime heritage.",
+    "pricePerHour": 18,
+    "languages": ["Arabic", "English", "Italian"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e329"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e32a"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e329"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1463453091185-61582044d556",
+      "publicId": "guides/karim_adel_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e",
+        "publicId": "guides/karim_adel_1",
+        "uploadedAt": "2024-07-25T09:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d",
+        "publicId": "guides/karim_adel_2",
+        "uploadedAt": "2024-07-26T10:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce",
+        "publicId": "guides/karim_adel_3",
+        "uploadedAt": "2024-07-27T12:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1496345875659-11f7dd282d1d",
+        "publicId": "guides/karim_adel_4",
+        "uploadedAt": "2024-07-28T13:30:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [29.9553, 31.2653]
+    },
+    "isVerified": false,
+    "isLicensed": false,
+    "canEnterArchaeologicalSites": false,
+    "rating": 4.4,
+    "ratingCount": 51,
+    "totalTrips": 62,
+    "experienceYears": 5,
+    "isActive": true,
+    "createdAt": "2023-11-18T10:00:00.000Z",
+    "updatedAt": "2024-11-26T14:35:00.000Z"
+  },
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439029"},
+    "name": "Rana Fathy",
+    "slug": "rana-fathy",
+    "bio": "Family-friendly tour guide creating engaging educational experiences for children and parents.",
+    "pricePerHour": 16,
+    "languages": ["Arabic", "English", "German"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e32b"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e32c"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e32b"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1517841905240-472988babdf9",
+      "publicId": "guides/rana_fathy_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+        "publicId": "guides/rana_fathy_1",
+        "uploadedAt": "2024-08-30T10:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80",
+        "publicId": "guides/rana_fathy_2",
+        "uploadedAt": "2024-08-31T12:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f",
+        "publicId": "guides/rana_fathy_3",
+        "uploadedAt": "2024-09-01T13:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df",
+        "publicId": "guides/rana_fathy_4",
+        "uploadedAt": "2024-09-02T15:00:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [31.2456, 30.0512]
+    },
+    "isVerified": true,
+    "isLicensed": false,
+    "canEnterArchaeologicalSites": false,
+    "rating": 4.5,
+    "ratingCount": 67,
+    "totalTrips": 79,
+    "experienceYears": 6,
+    "isActive": true,
+    "createdAt": "2023-09-05T12:00:00.000Z",
+    "updatedAt": "2024-12-03T11:45:00.000Z"
+  },
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439030"},
+    "name": "Amr Hosny",
+    "slug": "amr-hosny",
+    "bio": "Tel El-Amarna and Middle Egypt specialist focusing on Akhenaten era and ancient capitals.",
+    "pricePerHour": 25,
+    "languages": ["Arabic", "English", "French", "Russian"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e32d"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e32e"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e32f"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e32d"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+      "publicId": "guides/amr_hosny_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
+        "publicId": "guides/amr_hosny_1",
+        "uploadedAt": "2024-09-20T08:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7",
+        "publicId": "guides/amr_hosny_2",
+        "uploadedAt": "2024-09-21T09:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1504593811423-6dd665756598",
+        "publicId": "guides/amr_hosny_3",
+        "uploadedAt": "2024-09-22T11:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1496345875659-11f7dd282d1d",
+        "publicId": "guides/amr_hosny_4",
+        "uploadedAt": "2024-09-23T12:30:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [30.9041, 27.6465]
+    },
+    "isVerified": true,
+    "isLicensed": true,
+    "canEnterArchaeologicalSites": true,
+    "rating": 4.8,
+    "ratingCount": 134,
+    "totalTrips": 157,
+    "experienceYears": 12,
+    "isActive": true,
+    "createdAt": "2023-03-22T07:30:00.000Z",
+    "updatedAt": "2024-12-07T14:25:00.000Z"
+  },
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439031"},
+    "name": "Nada Sherif",
+    "slug": "nada-sherif",
+    "bio": "Shopping and bazaar specialist helping tourists navigate Khan El-Khalili and local markets.",
+    "pricePerHour": 12,
+    "languages": ["Arabic", "English"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e330"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e331"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e330"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb",
+      "publicId": "guides/nada_sherif_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91",
+        "publicId": "guides/nada_sherif_1",
+        "uploadedAt": "2024-10-15T11:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1503185912284-5271ff81b9a8",
+        "publicId": "guides/nada_sherif_2",
+        "uploadedAt": "2024-10-16T12:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb",
+        "publicId": "guides/nada_sherif_3",
+        "uploadedAt": "2024-10-17T14:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1",
+        "publicId": "guides/nada_sherif_4",
+        "uploadedAt": "2024-10-18T15:30:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [31.2621, 30.0471]
+    },
+    "isVerified": false,
+    "isLicensed": false,
+    "canEnterArchaeologicalSites": false,
+    "rating": 4.2,
+    "ratingCount": 29,
+    "totalTrips": 34
+  },
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439032"},
+    "name": "Mahmoud Samir",
+    "slug": "mahmoud-samir",
+    "bio": "Expert in Islamic art and architecture with focus on Cairo's historic mosques and madrasas.",
+    "pricePerHour": 22,
+    "languages": ["Arabic", "English", "Turkish"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e304"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e305"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e304"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+      "publicId": "guides/mahmoud_samir_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6",
+        "publicId": "guides/mahmoud_samir_1",
+        "uploadedAt": "2024-11-01T10:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1463453091185-61582044d556",
+        "publicId": "guides/mahmoud_samir_2",
+        "uploadedAt": "2024-11-02T11:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7",
+        "publicId": "guides/mahmoud_samir_3",
+        "uploadedAt": "2024-11-03T13:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
+        "publicId": "guides/mahmoud_samir_4",
+        "uploadedAt": "2024-11-04T14:30:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [31.2590, 30.0521]
+    },
+    "isVerified": true,
+    "isLicensed": true,
+    "canEnterArchaeologicalSites": true,
+    "rating": 4.7,
+    "ratingCount": 82,
+    "totalTrips": 94,
+    "experienceYears": 9,
+    "isActive": true,
+    "createdAt": "2023-05-12T09:00:00.000Z",
+    "updatedAt": "2024-12-08T16:00:00.000Z"
+  },
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439033"},
+    "name": "Nadia Ezzat",
+    "slug": "nadia-ezzat",
+    "bio": "Botanical garden and natural history specialist covering Egypt's unique flora and fauna.",
+    "pricePerHour": 17,
+    "languages": ["Arabic", "English", "Spanish"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e301"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e304"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e301"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+      "publicId": "guides/nadia_ezzat_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80",
+        "publicId": "guides/nadia_ezzat_1",
+        "uploadedAt": "2024-12-01T09:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb",
+        "publicId": "guides/nadia_ezzat_2",
+        "uploadedAt": "2024-12-02T10:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1",
+        "publicId": "guides/nadia_ezzat_3",
+        "uploadedAt": "2024-12-03T12:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb",
+        "publicId": "guides/nadia_ezzat_4",
+        "uploadedAt": "2024-12-04T13:30:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [31.2234, 30.0444]
+    },
+    "isVerified": false,
+    "isLicensed": false,
+    "canEnterArchaeologicalSites": false,
+    "rating": 4.3,
+    "ratingCount": 45,
+    "totalTrips": 52,
+    "experienceYears": 5,
+    "isActive": true,
+    "createdAt": "2024-01-15T11:00:00.000Z",
+    "updatedAt": "2024-12-05T14:20:00.000Z"
+  },
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439034"},
+    "name": "Walid Farouk",
+    "slug": "walid-farouk",
+    "bio": "Greco-Roman period expert specializing in Alexandria's ancient library and Cleopatra's history.",
+    "pricePerHour": 26,
+    "languages": ["Arabic", "English", "Greek", "Italian"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e306"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e307"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e306"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e",
+      "publicId": "guides/walid_farouk_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d",
+        "publicId": "guides/walid_farouk_1",
+        "uploadedAt": "2024-11-10T08:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce",
+        "publicId": "guides/walid_farouk_2",
+        "uploadedAt": "2024-11-11T10:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1496345875659-11f7dd282d1d",
+        "publicId": "guides/walid_farouk_3",
+        "uploadedAt": "2024-11-12T11:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1504593811423-6dd665756598",
+        "publicId": "guides/walid_farouk_4",
+        "uploadedAt": "2024-11-13T13:00:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [29.9097, 31.2156]
+    },
+    "isVerified": true,
+    "isLicensed": true,
+    "canEnterArchaeologicalSites": true,
+    "rating": 4.9,
+    "ratingCount": 156,
+    "totalTrips": 178,
+    "experienceYears": 14,
+    "isActive": true,
+    "createdAt": "2023-02-08T07:00:00.000Z",
+    "updatedAt": "2024-12-09T18:45:00.000Z"
+  },
+  {
+    "user": {"$oid": "507f1f77bcf86cd799439035"},
+    "name": "Amina Zaki",
+    "slug": "amina-zaki",
+    "bio": "Specialist in textile history and traditional Egyptian crafts with museum curation experience.",
+    "pricePerHour": 19,
+    "languages": ["Arabic", "English", "French", "German"],
+    "provinces": [
+      {"$oid": "60d5ec49f1b2c8b1f8e4e301"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e304"},
+      {"$oid": "60d5ec49f1b2c8b1f8e4e30f"}
+    ],
+    "province": {"$oid": "60d5ec49f1b2c8b1f8e4e301"},
+    "photo": {
+      "url": "https://images.unsplash.com/photo-1517841905240-472988babdf9",
+      "publicId": "guides/amina_zaki_main"
+    },
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f",
+        "publicId": "guides/amina_zaki_1",
+        "uploadedAt": "2024-11-15T10:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df",
+        "publicId": "guides/amina_zaki_2",
+        "uploadedAt": "2024-11-16T11:30:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1544005313-94ddf0286df2",
+        "publicId": "guides/amina_zaki_3",
+        "uploadedAt": "2024-11-17T13:00:00.000Z"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91",
+        "publicId": "guides/amina_zaki_4",
+        "uploadedAt": "2024-11-18T14:30:00.000Z"
+      }
+    ],
+    "location": {
+      "type": "Point",
+      "coordinates": [31.2420, 30.0626]
+    },
+    "isVerified": true,
+    "isLicensed": false,
+    "canEnterArchaeologicalSites": false,
+    "rating": 4.6,
+    "ratingCount": 73,
+    "totalTrips": 88,
+    "experienceYears": 7,
+    "isActive": true,
+    "createdAt": "2023-09-20T12:00:00.000Z",
+    "updatedAt": "2024-12-07T15:30:00.000Z"
+  }
+]

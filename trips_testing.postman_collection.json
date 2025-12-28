@@ -1,0 +1,411 @@
+{
+  "info": {
+    "name": "EGYGO - Trip Workflows Testing",
+    "description": "Postman collection for testing multi-place trip estimation, creation, acceptance, and negotiation workflows",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "token_tourist",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "token_guide",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "tripId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "attractionId1",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "attractionId2",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "guideId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login as Tourist",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('token_tourist', response.data.accessToken);",
+                  "    console.log('Tourist token saved:', response.data.accessToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test_tourist@example.com\",\n  \"password\": \"tourist123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Login as test tourist to get authentication token. Run this first to populate token_tourist variable."
+          },
+          "response": []
+        },
+        {
+          "name": "Login as Guide",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('token_guide', response.data.accessToken);",
+                  "    console.log('Guide token saved:', response.data.accessToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test_guide@example.com\",\n  \"password\": \"guide123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Login as test guide to get authentication token. Run this to populate token_guide variable."
+          },
+          "response": []
+        }
+      ],
+      "description": "Authenticate as tourist and guide to obtain JWT tokens for subsequent requests"
+    },
+    {
+      "name": "Trip Workflows",
+      "item": [
+        {
+          "name": "1. Estimate Trip Cost",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('Trip Estimate:', response.data);",
+                  "    console.log('Total Duration (hours):', response.data.totalDurationHours);",
+                  "    console.log('Estimated Total:', response.data.estimatedTotal);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"itinerary\": [\n    {\n      \"placeId\": \"{{attractionId1}}\",\n      \"visitDurationMinutes\": 90,\n      \"ticketRequired\": true,\n      \"notes\": \"Interested in pyramid interior\"\n    },\n    {\n      \"placeId\": \"{{attractionId2}}\",\n      \"visitDurationMinutes\": 60,\n      \"ticketRequired\": true,\n      \"notes\": \"Photo opportunity\"\n    }\n  ],\n  \"startAt\": \"2025-12-01T09:00:00.000Z\",\n  \"guideId\": \"{{guideId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/trips/estimate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "trips", "estimate"]
+            },
+            "description": "Estimate the cost and duration of a multi-place trip. Calculates travel time between attractions using Haversine distance, guide fees, and ticket costs. Replace attractionId1, attractionId2, and guideId with IDs from seed output."
+          },
+          "response": []
+        },
+        {
+          "name": "2. Create Trip (Tourist)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('tripId', response.data.trip._id);",
+                  "    console.log('Trip created with ID:', response.data.trip._id);",
+                  "    console.log('Status:', response.data.trip.status);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_tourist}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"itinerary\": [\n    {\n      \"placeId\": \"{{attractionId1}}\",\n      \"visitDurationMinutes\": 90,\n      \"ticketRequired\": true,\n      \"notes\": \"Interested in pyramid interior\"\n    },\n    {\n      \"placeId\": \"{{attractionId2}}\",\n      \"visitDurationMinutes\": 60,\n      \"ticketRequired\": true,\n      \"notes\": \"Photo opportunity\"\n    }\n  ],\n  \"startAt\": \"2025-12-01T09:00:00.000Z\",\n  \"guideId\": \"{{guideId}}\",\n  \"meetingAddress\": \"Giza Pyramids Entrance\",\n  \"notes\": \"First time visiting Egypt. Very excited!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tourist/trips",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tourist", "trips"]
+            },
+            "description": "Tourist creates a new trip with multi-place itinerary. Trip starts in 'pending' status awaiting guide acceptance. Requires tourist authentication token. Replace attraction and guide IDs with values from seed script."
+          },
+          "response": []
+        },
+        {
+          "name": "3. Accept Trip (Guide)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('Trip accepted! New status:', response.data.status);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_guide}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/guide/trips/{{tripId}}/accept",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "guide", "trips", "{{tripId}}", "accept"]
+            },
+            "description": "Guide accepts the trip. Uses atomic update to prevent race conditions. Checks for scheduling conflicts with other confirmed trips. Status changes from 'pending' to 'confirmed'. Requires guide authentication token. Replace {{tripId}} with actual trip ID from create response."
+          },
+          "response": []
+        },
+        {
+          "name": "4. Propose Changes (Guide)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('Proposal submitted! Status:', response.data.status);",
+                  "    console.log('Proposal:', response.data.proposal);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_guide}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"proposedItinerary\": [\n    {\n      \"placeId\": \"{{attractionId1}}\",\n      \"visitDurationMinutes\": 120,\n      \"ticketRequired\": true,\n      \"notes\": \"Extended time to explore interior chambers\"\n    },\n    {\n      \"placeId\": \"{{attractionId2}}\",\n      \"visitDurationMinutes\": 60,\n      \"ticketRequired\": true,\n      \"notes\": \"Photo opportunity\"\n    }\n  ],\n  \"proposedStartAt\": \"2025-12-01T08:00:00.000Z\",\n  \"note\": \"I recommend starting earlier to avoid crowds and spending more time at the Great Pyramid for better experience.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/guide/trips/{{tripId}}/propose-change",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "guide", "trips", "{{tripId}}", "propose-change"]
+            },
+            "description": "Guide proposes modifications to itinerary or start time. Trip status changes to 'proposal'. Must propose at least one change (itinerary OR startAt). Original trip data preserved for rollback if rejected. Tourist will receive notification to review proposal."
+          },
+          "response": []
+        },
+        {
+          "name": "5. Accept Proposal (Tourist)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('Proposal accepted! Trip updated.');",
+                  "    console.log('New status:', response.data.status);",
+                  "    console.log('Updated total:', response.data.finalPrice);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_tourist}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/tourist/trips/{{tripId}}/accept-proposal",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tourist", "trips", "{{tripId}}", "accept-proposal"]
+            },
+            "description": "Tourist accepts guide's proposal. Trip is updated with proposed changes, pricing recalculated, availability re-checked. Proposal moved to history. Status changes to 'confirmed'. Requires tourist authentication token."
+          },
+          "response": []
+        },
+        {
+          "name": "6. Reject Proposal (Tourist)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('Proposal rejected. Reverted to original trip.');",
+                  "    console.log('Status:', response.data.status);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_tourist}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rejectionNote\": \"Prefer original schedule and timing. Thank you for the suggestion.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tourist/trips/{{tripId}}/reject-proposal",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tourist", "trips", "{{tripId}}", "reject-proposal"]
+            },
+            "description": "Tourist rejects guide's proposal. Trip reverts to original itinerary and timing before proposal. Proposal cleared and moved to history with rejection note. Status changes back to 'pending'."
+          },
+          "response": []
+        },
+        {
+          "name": "7. Book from Attraction Page",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('Trip booked from attraction!');",
+                  "    console.log('Trip ID:', response.trip._id);",
+                  "    console.log('Meeting point auto-filled:', response.trip.meetingPoint);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_tourist}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"startAt\": \"2025-12-02T10:00:00.000Z\",\n  \"guideId\": \"{{guideId}}\",\n  \"notes\": \"Booked directly from attraction page\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attractions/{{attractionId1}}/book-from-planner",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attractions", "{{attractionId1}}", "book-from-planner"]
+            },
+            "description": "Convenience endpoint to book trip from attraction detail page. Automatically creates single-attraction itinerary with default 120-minute visit duration. Meeting point pre-filled from attraction location. Simplifies booking flow for tourists."
+          },
+          "response": []
+        }
+      ],
+      "description": "End-to-end trip workflow: estimate → create → accept → propose changes → accept/reject proposal"
+    }
+  ]
+}
