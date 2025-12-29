@@ -84,7 +84,7 @@ async function searchDatabase(intent) {
 
     let places = await Place.find(searchQuery)
       .populate("province", "name governorate slug")
-      .select("name type description tags location province")
+      .select("name type description tags location province images rating slug")
       .limit(100)
       .lean();
 
@@ -217,6 +217,17 @@ export async function processAIChat(userMessage, history = []) {
         success: true,
         source: "gemini",
         reply: geminiResponse,
+        data: dbResults.map((place) => ({
+          id: place._id,
+          name: place.name,
+          type: place.type,
+          location: place.location,
+          province: place.province,
+          description: place.description,
+          slug: place.slug,
+          images: place.images,
+          rating: place.rating,
+        })),
       };
     }
 

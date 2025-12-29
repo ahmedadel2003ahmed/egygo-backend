@@ -42,11 +42,23 @@ The backend returns a Markdown-formatted reply.
 {
   "success": true,
   "source": "gemini", 
-  "reply": "**Sofitel Winter Palace Luxor**\n\nThis is a historic hotel..."
+  "reply": "**Sofitel Winter Palace Luxor**\n\nThis is a historic hotel...",
+  "data": [
+    {
+      "id": "6750...",
+      "name": "Sofitel Winter Palace",
+      "type": "hotels",
+      "description": "...",
+      "images": ["url1", "url2"],
+      "rating": 4.8,
+      "slug": "sofitel-winter-palace"
+    }
+  ]
 }
 ```
 *   `source`: Can be `'database'` (direct FAQ match) or `'gemini'` (AI generated).
 *   `reply`: String containing Markdown (headers, bold, lists).
+*   `data`: Optional list of Place objects found by the AI. Use this to render interactive cards.
 
 ---
 
@@ -162,7 +174,29 @@ MarkdownBody(
 
 ---
 
-## 4. Key Notes for "Place Cards" Logic (Future Proofing)
-*   **Current State**: The AI returns text descriptions of places.
-*   **Parsing**: If valid structured data (like a specific "Hotel" or "Temple") is identified in the text, highlight it. 
-*   **Future Update**: Be prepared that future backend updates might send a structured `places: []` array in the response. Structuring your message widget to accept an optional `attachment` parameter now will save time later.
+## 4. Place Cards Logic (New Feature)
+The API now returns a `data` array when specific places are found. You should use this to render interactive cards below the AI text response.
+
+### Implementation Logic:
+1.  **Check for Data**: In your message widget, check if `message.data` is not null and not empty.
+2.  **Render Carousel**: If data exists, render a horizontal `ListView` (Carousel) of cards below the text bubble.
+3.  **Card Content**:
+    *   **Image**: Use `images[0]`.
+    *   **Title**: `name`.
+    *   **Rating**: Display stars based on `rating`.
+    *   **Action**: "Show More" button.
+4.  **Navigation**:
+    *   On "Show More" tap, navigate to `/place/:id`.
+    *   Example: `Navigator.pushNamed(context, '/place/${place.id}');`
+
+### Model Update
+Update your `ChatMessage` model to include the optional data:
+
+```dart
+class ChatMessage {
+  final String content;
+  final MessageRole role;
+  final List<dynamic>? data; // List of places
+  // ...
+}
+```
