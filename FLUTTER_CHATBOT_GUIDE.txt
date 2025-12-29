@@ -1,0 +1,168 @@
+    # Flutter AI Chatbot Integration Guide (LocalGuide AI)
+
+## Overview
+This guide accompanies the latest backend updates for the "LocalGuide AI" chatbot (codenamed Nefertiti). The chatbot now supports a **hybrid response system**:
+1.  **Database Knowledge**: It searches the MongoDB `Place` and `Faq` collections for relevant tourism data (Hotels, Temples, etc.) in specific governorates (Cairo, Luxor, Aswan, etc.).
+2.  **Generative AI**: It uses Google Gemini to synthesize natural responses using the retrieved database context.
+
+Your goal is to build a **premium, animated, and highly responsive** Flutter chat interface to consume this service.
+
+---
+
+## 1. API Documentation
+
+### Endpoint
+- **URL**: `YOUR_BASE_URL/api/chat` (e.g., `http://10.0.2.2:5000/api/chat` for Android Emulator)
+- **Method**: `POST`
+- **Authentication**: Not currently required (Public), but support passing `Authorization` header if available.
+
+### Request Body
+The backend expects the current message and the conversation history to maintain context.
+
+```json
+{
+  "message": "Can you recommend a hotel in Luxor?",
+  "history": [
+    {
+      "role": "user",
+      "content": "Hi"
+    },
+    {
+      "role": "model",
+      "content": "Hello! I am your Egyptian tour guide. How can I help?"
+    }
+  ]
+}
+```
+
+### Response Body
+The backend returns a Markdown-formatted reply.
+
+```json
+{
+  "success": true,
+  "source": "gemini", 
+  "reply": "**Sofitel Winter Palace Luxor**\n\nThis is a historic hotel..."
+}
+```
+*   `source`: Can be `'database'` (direct FAQ match) or `'gemini'` (AI generated).
+*   `reply`: String containing Markdown (headers, bold, lists).
+
+---
+
+## 2. Flutter Implementation Details
+
+### A. Dependencies
+Add the following packages to `pubspec.yaml` for a premium experience:
+
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  # Networking
+  dio: ^5.4.0 
+  # Markdown Rendering
+  flutter_markdown: ^0.6.14
+  # UI & Animations
+  flutter_animate: ^4.5.0
+  google_fonts: ^6.1.0
+  # State Management (Provider/Riverpod/Bloc - your choice, Provider assumed here)
+  provider: ^6.1.1
+```
+
+### B. Data Models
+
+```dart
+enum MessageRole { user, model }
+
+class ChatMessage {
+  final String content;
+  final MessageRole role;
+  final DateTime timestamp;
+
+  ChatMessage({
+    required this.content, 
+    required this.role, 
+    DateTime? timestamp
+  }) : this.timestamp = timestamp ?? DateTime.now();
+  
+  Map<String, String> toJson() => {
+    'role': role.name, // 'user' or 'model'
+    'content': content,
+  };
+}
+```
+
+### C. Service Layer (Dio Example)
+
+```dart
+import 'package:dio/dio.dart';
+
+class ChatService {
+  final Dio _dio = Dio(BaseOptions(baseUrl: 'http://10.0.2.2:5000/api'));
+
+  Future<String> sendMessage(String message, List<ChatMessage> history) async {
+    try {
+      final response = await _dio.post('/chat', data: {
+        'message': message,
+        'history': history.map((e) => e.toJson()).toList(),
+      });
+
+      if (response.data['success'] == true) {
+        return response.data['reply'];
+      } else {
+        throw Exception('Failed to get response');
+      }
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+  }
+}
+```
+
+---
+
+## 3. Design & UI Guidelines (Premium Aesthetics)
+
+To meet the "Wow" factor requirement, please follow these design rules:
+
+### 1. Typography & Theme
+*   **Font**: Use `GoogleFonts.outfit()` or `GoogleFonts.inter()` for a clean, modern look.
+*   **Colors**:
+    *   **Primary**: Deep Egyptian Blue (#005E93) or Gold (#D4AF37) accents.
+    *   **Background**: Light/Dark mode compatible. Use subtle gradients (e.g., linear gradient from top-left to bottom-right) for the chat background, don't use a flat color.
+    *   **Bubbles**:
+        *   *User*: Gradient Background (Blue -> Purple) with White text.
+        *   *AI*: Glassmorphism effect (semi-transparent white/dark with blur) or a soft light gray.
+
+### 2. Animations (`flutter_animate`)
+*   **Message Entry**: Messages should *slide in* and *fade in* from the bottom.
+    ```dart
+    ChatBubble(...).animate().fade().slideY(begin: 0.3, curve: Curves.easeOut);
+    ```
+*   **Typing Indicator**: Create a custom animated "..." bubble using staggered dot animations when `isLoading` is true.
+
+### 3. Markdown Rendering
+Use `MarkdownBody` to render the AI response. Customize the stylesheet to match your theme.
+
+```dart
+MarkdownBody(
+  data: message.content,
+  styleSheet: MarkdownStyleSheet(
+    p: GoogleFonts.outfit(fontSize: 16),
+    strong: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+    listBullet: TextStyle(color: Colors.amber),
+  ),
+)
+```
+
+### 4. Interactive Elements
+*   **Input Field**: Floating modern text field with a customized "Send" button (icon only, circular, with shadow).
+*   **Scroll Behavior**: Ensure the list auto-scrolls to the bottom smoothly when a new message arrives.
+
+---
+
+## 4. Key Notes for "Place Cards" Logic (Future Proofing)
+*   **Current State**: The AI returns text descriptions of places.
+*   **Parsing**: If valid structured data (like a specific "Hotel" or "Temple") is identified in the text, highlight it. 
+*   **Future Update**: Be prepared that future backend updates might send a structured `places: []` array in the response. Structuring your message widget to accept an optional `attachment` parameter now will save time later.

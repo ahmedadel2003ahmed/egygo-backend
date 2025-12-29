@@ -18,9 +18,7 @@ const requiredEnvVars = [
   "CLOUDINARY_CLOUD_NAME",
   "CLOUDINARY_API_KEY",
   "CLOUDINARY_API_SECRET",
-  "EMAIL_SMTP_HOST",
-  "EMAIL_USER",
-  "EMAIL_PASS",
+  "RESEND_API_KEY",
 ];
 
 const missingEnvVars = requiredEnvVars.filter((envVar) => !process.env[envVar]);
