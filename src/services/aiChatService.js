@@ -129,33 +129,49 @@ function formatDatabaseContext(results) {
  * Call Gemini API with context using @google/genai
  */
 export async function callGemini(userMessage, context = "") {
-  try {
-    const prompt = `${SYSTEM_PROMPT}\n\nDATA CONTEXT (if any):\n${context}\n\nUSER QUESTION: ${userMessage}`;
-    const response = await client.models.generateContent({
-      model: "gemini-flash-latest",
-      contents: [
-        {
-          role: "user",
-          parts: [{ text: prompt }],
-        },
-      ],
-    });
-    
-    // Extract text from the new SDK response structure
-    if (
-      response.candidates &&
-      response.candidates[0] &&
-      response.candidates[0].content &&
-      response.candidates[0].content.parts &&
-      response.candidates[0].content.parts.length > 0
-    ) {
-      return response.candidates[0].content.parts[0].text;
+  // List of models to try in order of preference/availablity
+  const modelsToTry = [
+    "gemini-2.0-flash-exp",
+    "gemini-2.0-flash-lite-preview-02-05", // Often has separate quota
+    "gemini-2.5-flash", // Known to be high quality but strict limits
+  ];
+
+  const prompt = `${SYSTEM_PROMPT}\n\nDATA CONTEXT (if any):\n${context}\n\nUSER QUESTION: ${userMessage}`;
+
+  for (const modelName of modelsToTry) {
+    try {
+      // console.log(`[aiChatService] Attempting with model: ${modelName}`);
+      const response = await client.models.generateContent({
+        model: modelName,
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: prompt }],
+          },
+        ],
+      });
+      
+      if (
+        response.candidates &&
+        response.candidates[0] &&
+        response.candidates[0].content &&
+        response.candidates[0].content.parts &&
+        response.candidates[0].content.parts.length > 0
+      ) {
+        return response.candidates[0].content.parts[0].text;
+      }
+    } catch (error) {
+       // Log warning but continue to next model
+       console.warn(`[aiChatService] Model ${modelName} failed: ${error.message?.substring(0, 100)}...`);
+       
+       // If it's the last model, or not a quota error, we might want to just continue or throw?
+       // For now, we continue to try all models.
+       continue;
     }
-    return null;
-  } catch (error) {
-    console.error("[aiChatService] Gemini API error:", error);
-    return null;
   }
+
+  console.error("[aiChatService] All models failed.");
+  return null;
 }
 
 /**
