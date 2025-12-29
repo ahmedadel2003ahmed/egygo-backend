@@ -1,45 +1,28 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import Place from "../models/Place.js";
+import Faq from "../models/Faq.js";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-const SYSTEM_PROMPT = `أنت نفرتيتي، مرشدة سياحية مصرية ذكية.
-
-قواعد صارمة:
-1. اجب بالعربية فقط.
-2. استخدم فقط المعلومات من السياق المقدم.
-3. لا تخترع أو تتخيل أي معلومات.
-4. إذا لم يكن هناك سياق، قل: "لا توجد معلومات متاحة حالياً عن هذا السؤال."
-5. ركز على مصر فقط - 27 محافظة.
-6. الفئات: أماكن أثرية، ترفيهية، فنادق، فعاليات.
-7. اعرض من 3 إلى 5 نتائج فقط.
-8. استخدم الصيغة: الاسم، المحافظة، النوع، الوصف.
-
-تصرف كمرشدة سياحية محترفة ودودة.`;
-
-const NO_DATA_MESSAGE = "لا توجد معلومات متاحة حالياً عن هذا السؤال.";
-const AI_ERROR_MESSAGE = "حدث خطأ في الاتصال بخدمة الدردشة.";
-const MAX_RESPONSE_LENGTH = 500;
-
-const GREETING_RESPONSE =
-  "أهلاً بك، أنا نفرتيتي مرشدتك السياحية الذكية. اسألني عن أي محافظة أو نوع مكان تحب تزوره في مصر 🇪🇬";
+const SYSTEM_PROMPT = `You are a professional Egyptian tour guide chatbot. Answer in simple Arabic or English depending on the user language. Your mission is to help tourists explore Egypt safely, culturally and enjoyably.`;
 
 const PROVINCES_MAP = {
-  المنيا: ["minya", "minia", "المنيا"],
-  القاهرة: ["cairo", "قاهرة", "القاهرة"],
-  الجيزة: ["giza", "جيزة", "الجيزة"],
-  الأقصر: ["luxor", "أقصر", "الأقصر"],
-  أسوان: ["aswan", "اسوان", "أسوان"],
-  الإسكندرية: ["alexandria", "اسكندرية", "الإسكندرية"],
-  "البحر الأحمر": ["red sea", "بحر احمر", "البحر الأحمر"],
-  مطروح: ["matrouh", "marsa matrouh", "مطروح", "مرسى مطروح"],
+  minya: ["minya", "minia", "المنيا"],
+  cairo: ["cairo", "aut", "قاهرة", "القاهرة"],
+  giza: ["giza", "جيزة", "الجيزة"],
+  luxor: ["luxor", "أقصر", "الأقصر"],
+  aswan: ["aswan", "اسوان", "أسوان"],
+  alexandria: ["alexandria", "alex", "اسكندرية", "الإسكندرية"],
+  "red sea": ["red sea", "hurghada", "el gouna", "بحر احمر", "البحر الأحمر"],
+  matrouh: ["matrouh", "marsa matrouh", "مطروح", "مرسى مطروح"],
 };
+
+const NO_DATA_MESSAGE = "معلش حصلت مشكلة مؤقتة، ممكن تعيد سؤالك بطريقة تانية؟";
+const AI_ERROR_MESSAGE = "معلش حصلت مشكلة مؤقتة، ممكن تعيد سؤالك بطريقة تانية؟";
+const MAX_RESPONSE_LENGTH = 1000;
 
 /**
  * Extract province and category from user message
- * @param {string} message - User's query
- * @returns {Object} - { province: string|null, category: string|null }
  */
 function extractIntent(message) {
   const lowerMessage = message.toLowerCase();
@@ -56,26 +39,26 @@ function extractIntent(message) {
   // Detect category
   const categoryKeywords = {
     hotels: [
-      "فندق",
-      "فنادق",
       "hotel",
       "hotels",
-      "مبيت",
       "accommodation",
-      "إقامة",
+      "stay",
+      "resort",
+      "فندق",
+      "فنادق",
     ],
     archaeological: [
-      "أثر",
-      "آثار",
       "archaeological",
       "monument",
-      "معبد",
       "temple",
-      "تاريخي",
-      "فرعوني",
+      "history",
+      "pyramid",
+      "أثر",
+      "آثار",
+      "معبد",
     ],
-    entertainment: ["ترفيه", "entertainment", "متعة", "fun", "لعب", "تسلية"],
-    events: ["فعالية", "فعاليات", "event", "events", "حدث", "احتفال", "مهرجان"],
+    entertainment: ["entertainment", "fun", "park", "cinema", "mall", "ترفيه"],
+    events: ["event", "events", "festival", "concert", "فعالية", "فعاليات"],
   };
 
   let detectedCategory = null;
@@ -90,61 +73,34 @@ function extractIntent(message) {
 }
 
 /**
- * Search MongoDB for relevant tourism data
- * @param {string} userMessage - User's query
- * @param {Object} intent - Extracted intent { province, category }
- * @returns {Promise<Array>} - Matching places/hotels/events
+ * Search MongoDB for relevant tourism data (Place)
  */
-async function searchDatabase(userMessage, intent) {
+async function searchDatabase(intent) {
   try {
     const { province, category } = intent;
-    const sanitizedMessage = userMessage.trim().substring(0, 200);
+    const searchQuery = { isActive: true };
 
-    // Build search query
-    const searchQuery = {
-      isActive: true,
-    };
+    if (category) searchQuery.type = category;
 
-    // Add category filter if detected
-    if (category) {
-      searchQuery.type = category;
-    }
-
-    // Search places
     let places = await Place.find(searchQuery)
       .populate("province", "name governorate slug")
       .select("name type description tags location province")
-      .limit(10)
+      .limit(100)
       .lean();
 
-    console.log(
-      `[aiChatService] Total places found before province filter: ${places.length}`
-    );
-
-    // Filter by province name if detected
     if (province && places.length > 0) {
       const filteredPlaces = places.filter((p) => {
         if (!p.province || !p.province.name) return false;
         const provinceName = p.province.name.toLowerCase();
         const aliases = PROVINCES_MAP[province] || [];
-        return aliases.some((alias) => provinceName.includes(alias));
-      });
-
-      console.log(
-        `[aiChatService] Places after province filter (${province}): ${filteredPlaces.length}`
-      );
-
-      // If province filter returned no results, use all results
-      if (filteredPlaces.length === 0) {
-        console.log(
-          `[aiChatService] No results for province ${province}, showing all available`
+        return (
+          provinceName.includes(province) ||
+          aliases.some((alias) => provinceName.includes(alias))
         );
-      } else {
-        places = filteredPlaces;
-      }
+      });
+      places = filteredPlaces;
     }
 
-    // Limit to 5 results
     return places.slice(0, 5);
   } catch (error) {
     console.error("[aiChatService] Database search error:", error);
@@ -154,166 +110,129 @@ async function searchDatabase(userMessage, intent) {
 
 /**
  * Format database results for AI context
- * @param {Array} results - Database results
- * @returns {string} - Formatted context string
  */
 function formatDatabaseContext(results) {
-  if (!results || results.length === 0) {
-    return "";
-  }
-
-  const categoryMap = {
-    archaeological: "موقع أثري",
-    hotels: "فندق",
-    events: "فعالية",
-    entertainment: "مكان ترفيهي",
-  };
-
-  const contextParts = results.map((item, index) => {
-    const typeName = categoryMap[item.type] || item.type;
-    const provinceName = item.province?.name || "غير محدد";
-
-    return `${index + 1}. الاسم: ${item.name}
-   المحافظة: ${provinceName}
-   النوع: ${typeName}
-   الوصف: ${item.description.substring(0, 150)}...`;
-  });
-
-  return contextParts.join("\n\n");
+  if (!results || results.length === 0) return "";
+  return results
+    .map((item, index) => {
+      const provinceName = item.province?.name || "Unknown";
+      return `${index + 1}. Name: ${
+        item.name
+      }\n   Province: ${provinceName}\n   Type: ${
+        item.type
+      }\n   Description: ${item.description.substring(0, 150)}...`;
+    })
+    .join("\n\n");
 }
 
 /**
- * Generate response from database context (fallback when OpenAI unavailable)
- * @param {string} context - Database context
- * @returns {string} - Formatted response
+ * Call Gemini API with context using @google/genai
  */
-function generateFallbackResponse(context) {
-  if (!context || context.trim().length === 0) {
-    return NO_DATA_MESSAGE;
-  }
-
-  const intro = "مرحباً! وجدت المعلومات التالية:\n\n";
-  let response = intro + context;
-
-  if (response.length > MAX_RESPONSE_LENGTH) {
-    response = response.substring(0, MAX_RESPONSE_LENGTH) + "...";
-  }
-
-  return response;
-}
-
-/**
- * Call Gemini API with context
- * @param {string} userMessage - User's message
- * @param {string} context - Database context
- * @returns {Promise<string>} - AI response
- */
-async function callGemini(userMessage, context) {
+export async function callGemini(userMessage, context = "") {
   try {
-    const prompt = `${SYSTEM_PROMPT}
-
-البيانات المتاحة من قاعدة البيانات:
-${context}
-
-سؤال المستخدم: ${userMessage}
-
-الرجاء الإجابة بالعربية فقط وباستخدام المعلومات المتاحة أعلاه فقط.`;
-
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    let reply = response.text() || NO_DATA_MESSAGE;
-
-    // Limit response length
-    if (reply.length > MAX_RESPONSE_LENGTH) {
-      reply = reply.substring(0, MAX_RESPONSE_LENGTH) + "...";
+    const prompt = `${SYSTEM_PROMPT}\n\nDATA CONTEXT (if any):\n${context}\n\nUSER QUESTION: ${userMessage}`;
+    const response = await client.models.generateContent({
+      model: "gemini-flash-latest",
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: prompt }],
+        },
+      ],
+    });
+    
+    // Extract text from the new SDK response structure
+    if (
+      response.candidates &&
+      response.candidates[0] &&
+      response.candidates[0].content &&
+      response.candidates[0].content.parts &&
+      response.candidates[0].content.parts.length > 0
+    ) {
+      return response.candidates[0].content.parts[0].text;
     }
-
-    return reply;
+    return null;
   } catch (error) {
     console.error("[aiChatService] Gemini API error:", error);
-
-    // If quota exceeded, API unavailable, or model not found, use fallback response
-    if (
-      error.message?.includes("quota") ||
-      error.message?.includes("429") ||
-      error.status === 404 ||
-      error.message?.includes("not found")
-    ) {
-      console.log(
-        "[aiChatService] Using fallback response due to Gemini unavailability"
-      );
-      return generateFallbackResponse(context);
-    }
-
-    throw new Error(AI_ERROR_MESSAGE);
+    return null;
   }
 }
 
 /**
- * Main chat function
+ * Main chat function - Hybrid Mode
  * @param {string} userMessage - User's input message
- * @returns {Promise<Object>} - { type: 'text'|'places', content: string|Array }
+ * @param {Array} history - Chat history
+ * @returns {Promise<Object>} - { success, source, reply }
  */
-export async function processAIChat(userMessage) {
+export async function processAIChat(userMessage, history = []) {
   try {
-    // Validate input
-    if (!userMessage || typeof userMessage !== "string") {
-      return { type: "text", content: NO_DATA_MESSAGE };
-    }
-
-    // Sanitize input
-    const sanitizedMessage = userMessage.trim();
-    if (sanitizedMessage.length === 0) {
-      return { type: "text", content: NO_DATA_MESSAGE };
-    }
-
-    // Handle greetings
-    const greetings = [
-      "مرحبا",
-      "أهلا",
-      "السلام",
-      "ازيك",
-      "ازي",
-      "hello",
-      "hi",
-      "hey",
-      "صباح",
-      "مساء",
-    ];
-    const lowerMessage = sanitizedMessage.toLowerCase();
+    // 1. Validate input
     if (
-      greetings.some((g) => lowerMessage.includes(g)) &&
-      sanitizedMessage.length < 20
+      !userMessage ||
+      typeof userMessage !== "string" ||
+      !userMessage.trim()
     ) {
-      return { type: "text", content: GREETING_RESPONSE };
+      return {
+        success: false,
+        source: "database",
+        reply: "Please provide a valid question.",
+      };
+    }
+    const sanitizedMessage = userMessage.trim();
+
+    // 2. Search FAQ (Database First)
+    const regex = new RegExp(
+      sanitizedMessage.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+      "i"
+    );
+
+    // Attempt exact match or regex substring match on Question
+    const faqMatch = await Faq.findOne({
+      question: { $regex: regex },
+    });
+
+    if (faqMatch) {
+      console.log(`[aiChatService] FAQ Match found: ${faqMatch.question}`);
+      return {
+        success: true,
+        source: "database",
+        reply: faqMatch.answer,
+      };
     }
 
-    // Extract intent (province & category)
+    // 3. If no FAQ match, proceed to Gemini Flow (which includes Place DB search context)
     const intent = extractIntent(sanitizedMessage);
-    console.log("[aiChatService] Extracted intent:", intent);
-
-    // Search database with intent
-    const dbResults = await searchDatabase(sanitizedMessage, intent);
-    console.log("[aiChatService] Found results:", dbResults.length);
-
-    // If no data found, return fallback message
-    if (dbResults.length === 0) {
-      return { type: "text", content: NO_DATA_MESSAGE };
+    let dbResults = [];
+    if (intent.province || intent.category) {
+      dbResults = await searchDatabase(intent);
     }
 
-    // Return places as structured data
-    const places = dbResults.map((place) => ({
-      id: place._id.toString(),
-      name: place.name,
-      province: place.province?.name || "غير محدد",
-      category: place.type,
-      description: place.description.substring(0, 150) + "...",
-    }));
+    const context = formatDatabaseContext(dbResults);
 
-    return { type: "places", content: places };
+    // 4. Call Gemini (no history support in new SDK)
+    const geminiResponse = await callGemini(sanitizedMessage, context);
+
+    if (geminiResponse) {
+      return {
+        success: true,
+        source: "gemini",
+        reply: geminiResponse,
+      };
+    }
+
+    // 5. Fallback if Gemini fails
+    return {
+      success: true,
+      source: "gemini",
+      reply: AI_ERROR_MESSAGE,
+    };
   } catch (error) {
     console.error("[aiChatService] processAIChat error:", error);
-    return { type: "text", content: error.message || AI_ERROR_MESSAGE };
+    return {
+      success: false,
+      source: "database",
+      reply: AI_ERROR_MESSAGE,
+    };
   }
 }
 

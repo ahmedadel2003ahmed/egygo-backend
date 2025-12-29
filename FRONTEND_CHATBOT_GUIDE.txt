@@ -1,0 +1,150 @@
+# Frontend Web AI Chatbot Integration Guide (React/Vite)
+
+## Overview
+This guide details how to integrate the "LocalGuide AI" chatbot into the React web application. The chatbot supports hybrid responses (Database FAQ + Gemini AI) and maintains conversation context.
+
+## 1. API Configuration
+
+### Base URL
+Assuming your backend is running locally at `http://localhost:5000`:
+- **Endpoint**: `/api/chat`
+- **Method**: `POST`
+- **Auth**: Not required (Public access), but you can include `Authorization` header if the user is logged in.
+
+### Headers
+```json
+{
+  "Content-Type": "application/json"
+}
+```
+
+## 2. Request Structure
+
+The backend expects the current message + the conversation history.
+
+### JSON Body
+```json
+{
+  "message": "Can you recommend a hotel in Cairo?",
+  "history": [
+    {
+      "role": "user",
+      "content": "Hi"
+    },
+    {
+      "role": "model",
+      "content": "Hello! I'm LocalGuide AI. How can I help you?"
+    }
+  ]
+}
+```
+
+## 3. Response Structure
+
+### JSON Response
+```json
+{
+  "success": true,
+  "source": "gemini", 
+  "reply": "I recommend the Old Cataract Hotel..."
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `success` | Boolean | True if successful. |
+| `source` | String | `'database'` (FAQ) or `'gemini'` (AI). |
+| `reply` | String | The text response to display. |
+
+## 4. React Implementation Guide
+
+### A. State Management
+You need state for the input, the message list, and a loading flag.
+
+```javascript
+const [input, setInput] = useState('');
+const [messages, setMessages] = useState([]); // Array of { role: 'user' | 'model', content: string }
+const [isLoading, setIsLoading] = useState(false);
+```
+
+### B. Sending a Message
+Use `axios` or `fetch` to send the data.
+
+```javascript
+const sendMessage = async () => {
+  if (!input.trim()) return;
+
+  // 1. Add user message to UI immediately
+  const userMsg = { role: 'user', content: input };
+  const newHistory = [...messages, userMsg];
+  setMessages(newHistory);
+  setInput('');
+  setIsLoading(true);
+
+  try {
+    // 2. Call API
+    const response = await fetch('http://localhost:5000/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: input,
+        history: messages // Send previous history
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      // 3. Add AI response to UI
+      setMessages([...newHistory, { role: 'model', content: data.reply }]);
+    }
+  } catch (error) {
+    console.error('Chat error:', error);
+    // Handle error (e.g., show toast)
+  } finally {
+    setIsLoading(false);
+  }
+};
+```
+
+### C. Displaying Messages (Markdown)
+The AI response may contain specific formatting (bold, lists). Use `react-markdown` to render it properly.
+
+**Install:**
+`npm install react-markdown`
+
+**Component:**
+```jsx
+import ReactMarkdown from 'react-markdown';
+
+// inside your map function
+<div className={`message ${msg.role === 'user' ? 'user-msg' : 'ai-msg'}`}>
+  <ReactMarkdown>{msg.content}</ReactMarkdown>
+</div>
+```
+
+### D. Auto-Scroll to Bottom
+Create a ref for the bottom of the chat list and scroll to it whenever `messages` change.
+
+```javascript
+const messagesEndRef = useRef(null);
+
+const scrollToBottom = () => {
+  messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+};
+
+useEffect(() => {
+  scrollToBottom();
+}, [messages]);
+
+// In JSX:
+// <div className="messages-list">...messages... <div ref={messagesEndRef} /></div>
+```
+
+## 5. UI/UX Recommendations
+
+1.  **Typing Indicator**: While `isLoading` is true, show a "..." bubble or a skeleton loader.
+2.  **Input Disabling**: Disable the text input and send button while `isLoading` is true to prevent double sends.
+3.  **Chat Button**: Recommended to have a floating action button (FAB) at the bottom right that opens the chat as a modal or drawer.
+4.  **Source Badge**: If `data.source === 'database'`, you can add a small "✓ Verified" badge next to the message to show it came from the official FAQ.
+

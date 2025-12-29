@@ -134,7 +134,7 @@ export const checkChatAccess = async (req, res) => {
  */
 export const aiChat = async (req, res) => {
   try {
-    const { message } = req.body;
+    const { message, history } = req.body;
 
     // Validate request body
     if (!message || typeof message !== "string") {
@@ -144,21 +144,17 @@ export const aiChat = async (req, res) => {
       });
     }
 
-    // Process chat through AI service
-    const result = await aiChatService.processAIChat(message);
+    // Process chat through AI service with history
+    const result = await aiChatService.processAIChat(message, history || []);
 
-    return res.status(HTTP_STATUS.OK).json({
-      success: true,
-      type: result.type,
-      content: result.content,
-    });
+    return res.status(HTTP_STATUS.OK).json(result);
   } catch (error) {
     console.error("[ChatController] aiChat error:", error);
 
     return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
-      type: "text",
-      content: "حدث خطأ في الاتصال بخدمة الدردشة.",
+      source: 'database',
+      reply: "معلش حصلت مشكلة مؤقتة، ممكن تعيد سؤالك بطريقة تانية؟"
     });
   }
 };
