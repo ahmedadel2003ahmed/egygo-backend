@@ -71,11 +71,19 @@ export const sendEmail = async ({ to, subject, text, html }) => {
 /**
  * Send OTP email
  */
+/**
+ * Send OTP email
+ */
 export const sendOTPEmail = async (email, otp) => {
+  if (!email || !otp) {
+    console.error('sendOTPEmail missing requirements:', { email: !!email, otp: !!otp });
+    throw new Error('Email and OTP are required for sending verification code');
+  }
+
   const subject = 'Your LocalGuide Verification Code';
   const text = `Your verification code is: ${otp}. This code will expire in ${process.env.OTP_EXPIRES_MINUTES || 10} minutes.`;
   const html = `
-<div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
       <!-- Header -->
       <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; text-align: center;">
         <h2 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600;">LocalGuide</h2>
@@ -118,7 +126,12 @@ export const sendOTPEmail = async (email, otp) => {
     </div>
   `;
 
-  return await sendEmail({ to: email, subject, text, html });
+  try {
+    return await sendEmail({ to: email, subject, text, html });
+  } catch (error) {
+    console.error(`Error in sendOTPEmail for ${email}:`, error.message);
+    throw error;
+  }
 };
 
 /**

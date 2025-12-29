@@ -19,10 +19,28 @@ class AuthService {
     // Check if email already exists
     const existingUser = await userRepository.findByEmail(email);
     if (existingUser) {
+      if (!existingUser.isEmailVerified) {
+        // User exists but verification failed/incomplete - Resend OTP
+        console.log(`User ${email} exists but not verified. Resending OTP.`);
+        const otp = await otpService.generateAndStoreOTP(email);
+        
+        emailService.sendOTP(email, otp).catch(err => {
+          console.error('Failed to send OTP email (non-blocking):', err.message);
+        });
+
+        console.log(`\n🔐 OTP for ${email}: ${otp} (expires in ${process.env.OTP_EXPIRES_MINUTES || 10} minutes)\n`);
+
+        return {
+          message: 'User already exists but is not verified. A new verification code has been sent.',
+          userId: existingUser._id,
+          otp: process.env.NODE_ENV === 'development' ? otp : undefined,
+          isResend: true
+        };
+      }
       throw new Error(ERROR_MESSAGES.EMAIL_ALREADY_EXISTS);
     }
-
-    // Create user
+    
+    // Create new user if not exists
     const user = await userRepository.create({
       email,
       password, // Will be hashed by User model pre-save hook
