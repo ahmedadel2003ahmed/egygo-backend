@@ -1,7 +1,7 @@
 import TripChatMessage from "../models/TripChatMessage.js";
 import Trip from "../models/Trip.js";
 import { ROLES } from "../utils/constants.js";
-import { TRIP_STATES } from "../utils/tripStateMachine.js";
+
 
 /**
  * Chat Service
@@ -12,7 +12,7 @@ import { TRIP_STATES } from "../utils/tripStateMachine.js";
  * - Chat allowed only after guide is selected (selectedGuide exists)
  * - Tourist can only chat with their assigned guide
  * - Guide can only chat with the tourist of their assigned trip
- * - No chat in draft, selecting_guide, or cancelled states
+ * - No chat in draft or selecting_guide (implied by selectedGuide check)
  * - All operations must be validated before execution
  */
 
@@ -21,15 +21,7 @@ class ChatService {
    * States where chat is allowed
    * Chat is allowed once guide is selected and trip is active
    */
-  static CHAT_ALLOWED_STATES = [
-    TRIP_STATES.AWAITING_CALL,
-    TRIP_STATES.IN_CALL,
-    TRIP_STATES.PENDING_CONFIRMATION,
-    TRIP_STATES.AWAITING_PAYMENT,
-    TRIP_STATES.CONFIRMED,
-    TRIP_STATES.IN_PROGRESS,
-    TRIP_STATES.COMPLETED,
-  ];
+
 
   /**
    * Validate if user can join chat for a trip
@@ -93,17 +85,7 @@ class ChatService {
         };
       }
 
-      // Check if trip status allows chat
-      if (!ChatService.CHAT_ALLOWED_STATES.includes(trip.status)) {
-        console.log("[ChatService] Validation failed: Status not allowed", {
-          status: trip.status,
-          allowedStates: ChatService.CHAT_ALLOWED_STATES,
-        });
-        return {
-          valid: false,
-          error: `Chat not available in ${trip.status} state`,
-        };
-      }
+
 
       // Validate user belongs to trip
       const touristId = trip.tourist.toString();

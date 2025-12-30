@@ -1,0 +1,93 @@
+# Frontend Web Integration: Extended Trip Lifecycle
+
+## Overview
+The Trip Lifecycle has been extended to include granular phases for better tracking and user experience. 
+**Old Flow**: `confirmed` -> `completed` (manual/implicit)
+**New Flow**: `confirmed` -> `upcoming` -> `in_progress` -> `completed`
+
+## 1. New Trip States
+Update your local types/interfaces to handle these new `status` values in the Trip object:
+
+- **`upcoming`**: 
+  - **Trigger**: Automatically set by backend scheduler 24 hours before `startAt`.
+  - **UI**: Show "Upcoming Trip" banner (Blue/Info).
+  - **Action**: Enable "Start Trip" button for Guide.
+
+- **`in_progress`**: 
+  - **Trigger**: Manually set when Guide clicks "Start Trip".
+  - **UI**: Show "Trip in Progress" indicator (Green/Active).
+  - **Action**: Enable "End Trip" button for Guide.
+
+- **`completed`**:
+  - **Trigger**: Manually set when Guide clicks "End Trip".
+  - **UI**: Show trip summary and "Rate Guide" / "Rate Tourist" flow.
+
+---
+
+## 2. API Endpoints (Guide Actions)
+These buttons should only be visible to the **Assigned Guide**.
+
+### A. Start Trip
+Transitions trip from `upcoming` -> `in_progress`.
+
+*   **Endpoint**: `POST /api/trips/{id}/start`
+*   **Method**: `POST`
+*   **Headers**: `Authorization: Bearer <token>`
+*   **Body**: `{}` (Empty JSON object)
+*   **Success Response**: `200 OK`
+
+### B. End Trip
+Transitions trip from `in_progress` -> `completed`.
+
+*   **Endpoint**: `POST /api/trips/{id}/end`
+*   **Method**: `POST`
+*   **Headers**: `Authorization: Bearer <token>`
+*   **Body**: `{}` (Empty JSON object)
+*   **Success Response**: `200 OK`
+
+---
+
+## 3. Real-time Updates (Socket.io)
+The app should listen for real-time status changes to update the UI instantly without refreshing the page.
+
+*   **Event Name**: `trip_status_updated`
+*   **Room**: `trip:{tripId}` (Ensure the socket joins this room upon mounting the Trip Details component)
+*   **Payload**:
+    ```json
+    {
+      "tripId": "60d5ec...",
+      "status": "upcoming", // or 'in_progress', 'completed'
+      "timestamp": "2023-10-27T10:00:00Z"
+    }
+    ```
+
+### React Implementation Example
+```javascript
+useEffect(() => {
+  // Join room logic (if not auto-handled by auth)
+  socket.emit('join_trip', tripId);
+
+  socket.on('trip_status_updated', (payload) => {
+    if (payload.tripId === tripId) {
+      setTrip(prev => ({ ...prev, status: payload.status }));
+    }
+  });
+
+  return () => {
+    socket.off('trip_status_updated');
+  };
+}, [tripId]);
+```
+
+---
+
+## 4. UI Logic Table
+
+| Current Status | User Role | Action Button | Banner Message |
+| :--- | :--- | :--- | :--- |
+| `confirmed` | Both | (None) | "Trip confirmed. Wait for start time." |
+| `upcoming` | **Guide** | **[Start Trip]** | "Trip is upcoming. Start when ready." |
+| `upcoming` | Tourist | (None) | "Guide will start the trip soon." |
+| `in_progress`| **Guide** | **[End Trip]** | "Trip in progress." |
+| `in_progress`| Tourist | (None) | "Enjoy your trip!" |
+| `completed` | Both | **[Rate]** | "Trip completed." |

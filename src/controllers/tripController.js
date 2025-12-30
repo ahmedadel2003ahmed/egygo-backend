@@ -1,5 +1,6 @@
 import tripService from '../services/tripService.js';
-import { HTTP_STATUS } from '../utils/constants.js';
+import guideRepository from '../repositories/guideRepository.js';
+import { HTTP_STATUS, ERROR_MESSAGES } from '../utils/constants.js';
 import { asyncHandler } from '../middlewares/errorHandler.js';
 
 /**
@@ -46,5 +47,47 @@ export const getTripById = asyncHandler(async (req, res) => {
   res.status(HTTP_STATUS.OK).json({
     success: true,
     data: trip,
+  });
+});
+
+/**
+ * Start Trip (Guide only)
+ * POST /api/trips/:id/start
+ */
+export const startTrip = asyncHandler(async (req, res) => {
+  const guide = await guideRepository.findByUserId(req.userId);
+  if (!guide) {
+    const error = new Error(ERROR_MESSAGES.GUIDE_NOT_FOUND);
+    error.status = 404;
+    throw error;
+  }
+
+  const trip = await tripService.startTrip(guide._id.toString(), req.params.id);
+
+  res.status(HTTP_STATUS.OK).json({
+    success: true,
+    data: trip,
+    message: 'Trip started successfully'
+  });
+});
+
+/**
+ * End Trip (Guide only)
+ * POST /api/trips/:id/end
+ */
+export const endTrip = asyncHandler(async (req, res) => {
+  const guide = await guideRepository.findByUserId(req.userId);
+  if (!guide) {
+    const error = new Error(ERROR_MESSAGES.GUIDE_NOT_FOUND);
+    error.status = 404;
+    throw error;
+  }
+
+  const trip = await tripService.endTrip(guide._id.toString(), req.params.id);
+
+  res.status(HTTP_STATUS.OK).json({
+    success: true,
+    data: trip,
+    message: 'Trip ended successfully'
   });
 });

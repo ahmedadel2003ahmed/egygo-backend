@@ -11,6 +11,7 @@ export const TRIP_STATES = {
   PENDING_CONFIRMATION: 'pending_confirmation',
   AWAITING_PAYMENT: 'awaiting_payment',
   CONFIRMED: 'confirmed',
+  UPCOMING: 'upcoming',
   IN_PROGRESS: 'in_progress',
   COMPLETED: 'completed',
   CANCELLED: 'cancelled',
@@ -47,9 +48,14 @@ const TRANSITIONS = {
     TRIP_STATES.CANCELLED
   ],
   [TRIP_STATES.CONFIRMED]: [
-    TRIP_STATES.IN_PROGRESS,
+    TRIP_STATES.UPCOMING,    // 24h before start (Scheduler)
+    TRIP_STATES.IN_PROGRESS, // Fallback if scheduler missed/late
     TRIP_STATES.CANCELLED,
     TRIP_STATES.COMPLETED // Immediate completion for short trips?
+  ],
+  [TRIP_STATES.UPCOMING]: [
+    TRIP_STATES.IN_PROGRESS, // Guide starts trip
+    TRIP_STATES.CANCELLED
   ],
   [TRIP_STATES.IN_PROGRESS]: [
     TRIP_STATES.COMPLETED,

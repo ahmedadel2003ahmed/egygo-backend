@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import tripRepository from "../repositories/tripRepository.js";
 import guideRepository from "../repositories/guideRepository.js";
+import { TRIP_STATES, validateTransition } from "../utils/tripStateMachine.js";
 import userRepository from "../repositories/userRepository.js";
 import attractionRepository from "../repositories/attractionRepository.js";
 import callRepository from "../repositories/callRepository.js";
@@ -798,7 +799,11 @@ class TripService {
         .populate("tourist", "name email phone avatar")
         .populate({
           path: "guide",
-          populate: { path: "user", select: "name email phone avatar" },
+          select: "name avatar languages bio rating reviewCount pricePerHour",
+        })
+        .populate({
+            path: "selectedGuide",
+            select: "name avatar languages bio rating reviewCount pricePerHour",
         })
         .populate("itinerary.place", "name location ticketPrice");
 
@@ -849,6 +854,74 @@ class TripService {
       console.error("[CALL_DEBUG] acceptTrip error:", error);
       throw error;
     }
+  }
+
+  /**
+   * Start a trip (Guide only)
+   * Status: UPCOMING -> IN_PROGRESS
+   */
+  async startTrip(guideId, tripId) {
+    const trip = await tripRepository.findById(tripId);
+    if (!trip) throw new Error(ERROR_MESSAGES.TRIP_NOT_FOUND);
+
+    // Verify assigned guide
+    const assignedGuideId = trip.selectedGuide?._id?.toString() || trip.selectedGuide?.toString() || trip.guide?._id?.toString() || trip.guide?.toString();
+    if (assignedGuideId !== guideId) {
+        const error = new Error('Only the assigned guide can start this trip');
+        error.status = 403;
+        throw error;
+    }
+
+    if (trip.status !== TRIP_STATES.UPCOMING) {
+        // Strict adherence to rules: start only when upcoming
+        const error = new Error(`Trip must be in '${TRIP_STATES.UPCOMING}' state to start (current: ${trip.status})`);
+        error.status = 422;
+        throw error;
+    }
+
+    validateTransition(trip.status, TRIP_STATES.IN_PROGRESS);
+
+    // FIX: Use updateById because findById returns a lean object (cannot use .save())
+    const updatedTrip = await tripRepository.updateById(tripId, {
+      status: TRIP_STATES.IN_PROGRESS
+    });
+    
+    emitTripStatusUpdate(updatedTrip);
+    return updatedTrip;
+  }
+
+  /**
+   * End a trip (Guide only)
+   * Status: IN_PROGRESS -> COMPLETED
+   */
+  async endTrip(guideId, tripId) {
+    const trip = await tripRepository.findById(tripId);
+    if (!trip) throw new Error(ERROR_MESSAGES.TRIP_NOT_FOUND);
+
+    // Verify assigned guide
+    const assignedGuideId = trip.selectedGuide?._id?.toString() || trip.selectedGuide?.toString() || trip.guide?._id?.toString() || trip.guide?.toString();
+    if (assignedGuideId !== guideId) {
+        const error = new Error('Only the assigned guide can end this trip');
+        error.status = 403;
+        throw error;
+    }
+
+    if (trip.status !== TRIP_STATES.IN_PROGRESS) {
+        const error = new Error(`Trip must be in '${TRIP_STATES.IN_PROGRESS}' state to end (current: ${trip.status})`);
+        error.status = 422;
+        throw error;
+    }
+
+    validateTransition(trip.status, TRIP_STATES.COMPLETED);
+
+    // FIX: Use updateById because findById returns a lean object (cannot use .save())
+    const updatedTrip = await tripRepository.updateById(tripId, {
+      status: TRIP_STATES.COMPLETED
+    });
+    
+    emitTripStatusUpdate(updatedTrip);
+    
+    return updatedTrip;
   }
 
   /**

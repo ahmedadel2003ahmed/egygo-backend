@@ -1,0 +1,93 @@
+# Flutter Mobile Integration: Extended Trip Lifecycle
+
+## Overview
+The Trip Lifecycle has been extended to include granular phases for better tracking and user experience. 
+**Old Flow**: `confirmed` -> `completed` (manual/implicit)
+**New Flow**: `confirmed` -> `upcoming` -> `in_progress` -> `completed`
+
+## 1. New Trip States
+Update your local logic/Enums to handle these new `status` values in the Trip object:
+
+- **`upcoming`**: 
+  - **Trigger**: Automatically set by backend scheduler 24 hours before `startAt`.
+  - **UI**: Show "Upcoming Trip" banner.
+  - **Action**: Enable "Start Trip" button for Guide.
+
+- **`in_progress`**: 
+  - **Trigger**: Manually set when Guide taps "Start Trip".
+  - **UI**: Show "Trip in Progress" indicator (e.g., green pulsing badge).
+  - **Action**: Enable "End Trip" button for Guide.
+
+- **`completed`**:
+  - **Trigger**: Manually set when Guide taps "End Trip".
+  - **UI**: Show trip summary and "Rate Guide" / "Rate Tourist" flow.
+
+---
+
+## 2. API Endpoints (Guide Actions)
+These endpoints are for the **Assigned Guide** only.
+
+### A. Start Trip
+Transitions trip from `upcoming` -> `in_progress`.
+
+*   **Endpoint**: `POST /api/trips/{id}/start`
+*   **Auth**: Bearer Token (Guide)
+*   **Body**: `{}` (Empty)
+*   **Response**:
+    ```json
+    {
+      "success": true,
+      "message": "Trip started successfully",
+      "data": { ...tripObject }
+    }
+    ```
+
+### B. End Trip
+Transitions trip from `in_progress` -> `completed`.
+
+*   **Endpoint**: `POST /api/trips/{id}/end`
+*   **Auth**: Bearer Token (Guide)
+*   **Body**: `{}` (Empty)
+*   **Response**:
+    ```json
+    {
+      "success": true,
+      "message": "Trip ended successfully",
+      "data": { ...tripObject }
+    }
+    ```
+
+---
+
+## 3. Real-time Updates (Socket.io)
+The app should listen for real-time status changes to update the UI instantly (e.g., if the scheduler updates the status to `upcoming` while the user is viewing the details).
+
+*   **Event Name**: `trip_status_updated`
+*   **Room**: `trip:{tripId}` (Ensure you join this room or listen to global user events if configured)
+*   **Payload**:
+    ```json
+    {
+      "tripId": "60d5ec...",
+      "status": "upcoming", // or 'in_progress', 'completed'
+      "timestamp": "2023-10-27T10:00:00Z"
+    }
+    ```
+
+### Implementation Tip
+In your `TripDetailsProvider` or `Bloc`:
+1.  Initialize Socket connection.
+2.  Listen for `trip_status_updated`.
+3.  If `payload.tripId` matches current trip, update local state `status`.
+
+---
+
+## 4. UI Logic Table
+
+| Current Status | User Role | Action Button | Banner Message |
+| :--- | :--- | :--- | :--- |
+| `confirmed` | Both | (None) | "Trip confirmed. Wait for start time." |
+| `upcoming` | **Guide** | **[Start Trip]** | "Trip is upcoming. Start when ready." |
+| `upcoming` | Tourist | (None) | "Guide will start the trip soon." |
+| `in_progress`| **Guide** | **[End Trip]** | "Trip in progress." |
+| `in_progress`| Tourist | (None) | "Enjoy your trip!" |
+| `completed` | Both | **[Rate]** | "Trip completed." |

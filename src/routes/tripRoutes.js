@@ -19,5 +19,7 @@ router.use(authenticate);
 
 router.get('/', tripController.getAllTrips);
 router.get('/:id', tripController.getTripById);
+router.post('/:id/start', tripController.startTrip);
+router.post('/:id/end', tripController.endTrip);
 
 export default router;

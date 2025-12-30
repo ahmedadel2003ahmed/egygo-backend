@@ -1,0 +1,91 @@
+# Frontend Implementation Guide: Extended Trip Lifecycle
+
+## Overview
+This guide details the frontend changes required to support the new Trip Lifecycle phases: "Upcoming", "In Progress", and "Completed".
+
+## 1. New Trip States
+The `trip.status` field can now have the following values (addition to existing ones):
+- `upcoming`: Automatically set 24 hours before `startAt` (handled by backend scheduler).
+- `in_progress`: Manually set by Guide via "Start Trip" button.
+- `completed`: Manually set by Guide via "End Trip" button.
+
+## 2. Guide Dashboard / Trip Details Changes
+
+### A. Status Banners
+Add logic to display banners based on status:
+
+1.  **If `status === 'upcoming'`**:
+    -   **Color**: Info/Blue
+    -   **Message**: "This trip is upcoming. Please be ready at the meeting point."
+    -   **Guide Action**: Show "Start Trip" button.
+
+2.  **If `status === 'in_progress'`**:
+    -   **Color**: Success/Green (pulsing?)
+    -   **Message**: "Trip is currently in progress."
+    -   **Guide Action**: Show "End Trip" button.
+
+3.  **If `status === 'completed'`**:
+    -   **Color**: Gray/Neutral
+    -   **Message**: "This trip has been completed."
+    -   **Tourist Action**: Show "Rate Trip" button/form.
+
+### B. Action Buttons (Guide Only)
+
+Only the **assigned guide** should see these buttons.
+
+#### Start Trip
+-   **Condition**: `trip.status === 'upcoming'` (and user is the assigned guide).
+-   **API Endpoint**: `POST /api/trips/:id/start`
+-   **Body**: `{}` (Empty)
+-   **Success**: Trip status updates to `in_progress`.
+
+#### End Trip
+-   **Condition**: `trip.status === 'in_progress'` (and user is the assigned guide).
+-   **API Endpoint**: `POST /api/trips/:id/end`
+-   **Body**: `{}` (Empty)
+-   **Success**: Trip status updates to `completed`.
+
+## 3. Realtime Updates (Socket.io)
+
+The backend emits `trip_status_updated` event whenever the status changes (via scheduler or API).
+
+### Listener Implementation
+
+In your Trip Details component (useEffect):
+
+```javascript
+import { io } from 'socket.io-client';
+
+// ... inside component ...
+
+useEffect(() => {
+  // Join the trip structure room automatically handled by backend auth? 
+  // Backend emits to `trip:{tripId}` room.
+  // Ensure the frontend socket joins this room or the user receives it via user-specific channel.
+  // *Backend Note*: The current backend emits to `trip:{tripId}` room. 
+  // The frontend must ensure it listens to this event.
+  // If using the standard socket setup, you might need to emit a 'join_trip' event if required, 
+  // or rely on the fact that the backend might join users automatically (custom logic dependent).
+  
+  // Actually, standard practice:
+  socket.emit('join_trip', tripId); // Use if backend supports it, otherwise ensure user is in the room.
+
+  socket.on('trip_status_updated', (payload) => {
+    if (payload.tripId === tripId) {
+       // Update local state
+       setTrip(prev => ({ ...prev, status: payload.status }));
+    }
+  });
+
+  return () => {
+    socket.off('trip_status_updated');
+  };
+}, [tripId]);
+```
+
+*Note*: If `join_trip` is not implemented in backend sockets yet, rely on `trip_status_updated` being broadcast to involved users if logic exists, or request backend update to support explicit room joining. (Currently backend emits to room `trip:{tripId}`, so you must join that room).
+
+## 4. Testing
+1.  **Scheduler**: Wait for 60 mins OR check logs. (Trips confirm -> upcoming).
+2.  **Guide Action**: Log in as guide, go to details, click Start/End.
+3.  **Tourist View**: Verify status updates instantly without refresh.

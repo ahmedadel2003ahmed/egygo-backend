@@ -11,6 +11,7 @@ export const ROLES = {
 export const TRIP_STATUS = {
   PENDING: 'pending',
   CONFIRMED: 'confirmed',
+  UPCOMING: 'upcoming',
   IN_PROGRESS: 'in_progress',
   COMPLETED: 'completed',
   CANCELLED: 'cancelled',

@@ -46,7 +46,20 @@ The backend expects the current message + the conversation history.
 {
   "success": true,
   "source": "gemini", 
-  "reply": "I recommend the Old Cataract Hotel..."
+  "success": true,
+  "source": "gemini", 
+  "reply": "I recommend the Old Cataract Hotel...",
+  "data": [
+    {
+      "id": "60d5ec...",
+      "name": "Marriott Mena House",
+      "type": "hotels",
+      "description": "...",
+      "images": ["url1", "url2"],
+      "rating": 4.8,
+      "slug": "marriott-mena-house"
+    }
+  ]
 }
 ```
 
@@ -55,6 +68,7 @@ The backend expects the current message + the conversation history.
 | `success` | Boolean | True if successful. |
 | `source` | String | `'database'` (FAQ) or `'gemini'` (AI). |
 | `reply` | String | The text response to display. |
+| `data` | Array | Optional. List of place objects to render as cards. |
 
 ## 4. React Implementation Guide
 
@@ -96,7 +110,11 @@ const sendMessage = async () => {
 
     if (data.success) {
       // 3. Add AI response to UI
-      setMessages([...newHistory, { role: 'model', content: data.reply }]);
+      setMessages([...newHistory, { 
+        role: 'model', 
+        content: data.reply,
+        data: data.data || [] // Store structure data if available
+      }]);
     }
   } catch (error) {
     console.error('Chat error:', error);
@@ -147,4 +165,49 @@ useEffect(() => {
 2.  **Input Disabling**: Disable the text input and send button while `isLoading` is true to prevent double sends.
 3.  **Chat Button**: Recommended to have a floating action button (FAB) at the bottom right that opens the chat as a modal or drawer.
 4.  **Source Badge**: If `data.source === 'database'`, you can add a small "✓ Verified" badge next to the message to show it came from the official FAQ.
+
+## 6. Place Cards Logic (New Feature)
+
+The API now returns a `data` array when specific places are found. You should use this to render interactive cards below the AI text response.
+
+### Implementation Guide
+
+1.  **Check for Data**: In your message loop, check if the current message object has a `data` array with items.
+2.  **Render Carousel**: Use a horizontal scroll container (CSS: `overflow-x-auto`, `flex`) to display the cards.
+3.  **Card Component**:
+    *   **Thumbnail**: Display `place.images[0]`.
+    *   **Title**: `place.name`
+    *   **Rating**: Render stars for `place.rating`.
+    *   **Action**: A "Show More" button linking to `/place/${place.id}`.
+
+### Example Component Snippet
+
+```jsx
+import { Link } from 'react-router-dom';
+
+// Inside your message rendering loop
+{msg.data && msg.data.length > 0 && (
+  <div className="flex gap-4 overflow-x-auto p-2 mt-2">
+    {msg.data.map((place) => (
+      <div key={place.id} className="min-w-[200px] border rounded-lg p-2 shadow-sm bg-white dark:bg-gray-800">
+        <img 
+          src={place.images[0]} 
+          alt={place.name} 
+          className="w-full h-32 object-cover rounded-md mb-2" 
+        />
+        <h4 className="font-bold text-sm truncate">{place.name}</h4>
+        <div className="text-yellow-500 text-xs my-1">
+           {'★'.repeat(Math.round(place.rating || 0))}
+        </div>
+        <Link 
+          to={`/place/${place.id}`} 
+          className="block w-full text-center bg-blue-600 text-white text-xs py-2 rounded hover:bg-blue-700 transition"
+        >
+          Show More
+        </Link>
+      </div>
+    ))}
+  </div>
+)}
+```
 

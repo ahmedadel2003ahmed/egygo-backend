@@ -5,6 +5,7 @@ import { connectDB } from "./config/db.js";
 import { configureCloudinary } from "./config/cloudinary.js";
 import { initializeMailer } from "./utils/mailer.js";
 import { initializeSocketServer } from "./sockets/index.js";
+import { startScheduler } from "./jobs/tripStatusScheduler.js";
 
 
 app.get("/health", (req, res) => {
@@ -51,6 +52,9 @@ const startServer = async () => {
     // Initialize Socket.io server
     const io = initializeSocketServer(httpServer);
     console.log("💬 Socket.io server initialized");
+
+    // Start Trip Status Scheduler
+    startScheduler();
 
     // Start HTTP server (handles both Express and Socket.io)
     httpServer.listen(PORT, "0.0.0.0", () => {
