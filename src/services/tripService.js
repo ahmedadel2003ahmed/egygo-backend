@@ -775,7 +775,7 @@ class TripService {
 
       // 5. Atomic Update
       const updatePayload = {
-        status: "confirmed",
+        status: TRIP_STATES.UPCOMING,
         confirmedAt: new Date(),
         guide: resolvedGuideId, // Ensure guide is assigned
         selectedGuide: resolvedGuideId,

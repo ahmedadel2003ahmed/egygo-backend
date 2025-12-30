@@ -38,12 +38,14 @@ const TRANSITIONS = {
   ],
   [TRIP_STATES.PENDING_CONFIRMATION]: [
     TRIP_STATES.AWAITING_PAYMENT, // Guida accetta
+    TRIP_STATES.UPCOMING,        // Direct to upcoming (no wait for 24h)
     TRIP_STATES.REJECTED,        // Guida rifiuta
     TRIP_STATES.AWAITING_CALL,   // Rinegoziazione (nuova chiamata)
     TRIP_STATES.CANCELLED
   ],
   [TRIP_STATES.AWAITING_PAYMENT]: [
     TRIP_STATES.CONFIRMED, // Pagamento OK
+    TRIP_STATES.UPCOMING,  // Direct to upcoming
     TRIP_STATES.PENDING_CONFIRMATION, // Backtrack? Usually no, but maybe timeout
     TRIP_STATES.CANCELLED
   ],
