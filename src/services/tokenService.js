@@ -45,6 +45,17 @@ class TokenService {
   }
 
   /**
+   * Generate password reset token
+   */
+  generateResetToken(userId) {
+    return jwt.sign(
+      { userId, type: 'reset' },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+  }
+
+  /**
    * Verify access token
    */
   verifyAccessToken(token) {
@@ -69,6 +80,26 @@ class TokenService {
       const tokenRecord = await refreshTokenRepository.findByToken(token);
       
       if (!tokenRecord) {
+        throw new Error(ERROR_MESSAGES.INVALID_TOKEN);
+      }
+
+      return decoded;
+    } catch (error) {
+      if (error.name === 'TokenExpiredError') {
+        throw new Error(ERROR_MESSAGES.TOKEN_EXPIRED);
+      }
+      throw new Error(ERROR_MESSAGES.INVALID_TOKEN);
+    }
+  }
+
+  /**
+   * Verify reset token
+   */
+  verifyResetToken(token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      
+      if (decoded.type !== 'reset') {
         throw new Error(ERROR_MESSAGES.INVALID_TOKEN);
       }
 

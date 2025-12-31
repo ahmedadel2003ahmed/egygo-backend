@@ -130,6 +130,36 @@ export const getMe = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Request password reset
+ * POST /api/auth/forgot-password
+ */
+export const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  const result = await authService.forgotPassword(email);
+
+  res.status(HTTP_STATUS.OK).json({
+    success: true,
+    ...result,
+  });
+});
+
+/**
+ * Reset password
+ * POST /api/auth/reset-password
+ */
+export const resetPassword = asyncHandler(async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  const result = await authService.resetPassword(token, newPassword);
+
+  res.status(HTTP_STATUS.OK).json({
+    success: true,
+    ...result,
+  });
+});
+
+/**
  * Change password
  * PUT /api/auth/change-password
  */

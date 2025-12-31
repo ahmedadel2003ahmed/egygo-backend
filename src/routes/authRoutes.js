@@ -8,6 +8,8 @@ import {
   validateLogin,
   validateOTP,
   validatePasswordChange,
+  validateForgotPassword,
+  validateResetPassword,
 } from '../utils/validators.js';
 
 const router = express.Router();
@@ -225,12 +227,75 @@ router.post('/logout', authenticate, authController.logout);
 
 /**
  * @swagger
+ * /auth/forgot-password:
+ *   post:
+ *     summary: Request password reset
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       200:
+ *         description: Reset email sent
+ */
+router.post('/forgot-password', authLimiter, validate(validateForgotPassword), authController.forgotPassword);
+
+/**
+ * @swagger
+ * /auth/reset-password:
+ *   post:
+ *     summary: Reset password with token
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - token
+ *               - newPassword
+ *             properties:
+ *               token:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *                 minLength: 6
+ *     responses:
+ *       200:
+ *         description: Password reset successfully
+ */
+router.post('/reset-password', authLimiter, validate(validateResetPassword), authController.resetPassword);
+
+/**
+ * @swagger
  * /auth/me:
  *   get:
  *     summary: Get current user profile
  *     tags: [Authentication]
  *     security:
  *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User profile
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
  *     responses:
  *       200:
  *         description: User profile

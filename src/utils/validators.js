@@ -65,6 +65,29 @@ export const validatePasswordChange = (data) => {
 };
 
 /**
+ * Validate forgot password
+ */
+export const validateForgotPassword = (data) => {
+  const schema = Joi.object({
+    email: Joi.string().email().required(),
+  });
+
+  return schema.validate(data);
+};
+
+/**
+ * Validate reset password
+ */
+export const validateResetPassword = (data) => {
+  const schema = Joi.object({
+    token: Joi.string().required(),
+    newPassword: Joi.string().min(6).required(),
+  });
+
+  return schema.validate(data);
+};
+
+/**
  * Validate email
  */
 export const validateEmail = (email) => {

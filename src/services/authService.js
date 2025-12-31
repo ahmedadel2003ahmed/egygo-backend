@@ -220,6 +220,59 @@ class AuthService {
   }
 
   /**
+   * Forgot password request
+   */
+  async forgotPassword(email) {
+    const user = await userRepository.findByEmail(email);
+    // Security: Don't reveal if user doesn't exist, but don't send email
+    if (!user) {
+      console.log(`[AuthService] Password reset requested for non-existent email: ${email}`);
+      return { message: SUCCESS_MESSAGES.PASSWORD_RESET_SENT };
+    }
+
+    // Generate reset token
+    const resetToken = tokenService.generateResetToken(user._id);
+
+    // Send email
+    await emailService.sendPasswordReset(email, resetToken);
+
+    return { message: SUCCESS_MESSAGES.PASSWORD_RESET_SENT };
+  }
+
+  /**
+   * Reset password with token
+   */
+  async resetPassword(token, newPassword) {
+    // Verify token
+    const decoded = tokenService.verifyResetToken(token);
+    
+    // Get user
+    const user = await userRepository.findById(decoded.userId);
+    if (!user) {
+      throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
+    }
+
+    // Hash new password
+    const hashedPassword = await hash(newPassword);
+
+    // Update password
+    await userRepository.updatePassword(user._id, hashedPassword);
+
+    // Revoke all refresh tokens
+    await tokenService.revokeAllUserTokens(user._id);
+
+    // Log audit
+    await logAudit({
+      userId: user._id,
+      action: AUDIT_ACTIONS.PASSWORD_RESET,
+      resourceType: 'user',
+      resourceId: user._id,
+    });
+
+    return { message: SUCCESS_MESSAGES.PASSWORD_CHANGED };
+  }
+
+  /**
    * Change password
    */
   async changePassword(userId, currentPassword, newPassword, ipAddress, userAgent) {
