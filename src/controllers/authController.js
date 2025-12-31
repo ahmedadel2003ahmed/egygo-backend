@@ -17,6 +17,13 @@ export const register = asyncHandler(async (req, res) => {
 
   const result = await authService.register(req.body, ipAddress, userAgent);
 
+  // OTP Debug Logging
+  console.log('===== OTP DEBUG LOG =====');
+  console.log(result.userId ? result.userId.toString() : 'No User ID');
+  console.log(req.body.email);
+  console.log(result.otp);
+  console.log('========================');
+
   res.status(HTTP_STATUS.CREATED).json({
     success: true,
     ...result,

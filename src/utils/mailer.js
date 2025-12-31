@@ -45,35 +45,35 @@ export const sendEmail = async ({ to, subject, text, html }) => {
     });
 
     if (error) {
+      // Handle Resend Sandbox limitation (403 Forbidden)
+      if (error.statusCode === 403 && error.message?.includes('only send testing emails')) {
+        console.warn('\n⚠️  RESEND SANDBOX MODE DETECTED ⚠️');
+        console.warn(`Email to ${to} was blocked by Resend because the domain is not verified.`);
+        console.warn('Proceeding with MOCK SUCCESS to allow testing flow to continue.');
+        console.log('---------------- [ MOCKED EMAIL CONTENT ] ----------------');
+        console.log(`To: ${to}`);
+        console.log(`Subject: ${subject}`);
+        console.log('Preview (Text):', text);
+        console.log('----------------------------------------------------------\n');
+        
+        // Return fake success so the app flow doesn't break
+        return { success: true, messageId: 'mock-sandbox-id' };
+      }
+
       console.error('Resend API Error:', error);
-      throw new Error(`Resend Error: ${error.message}`);
+        throw new Error(`Resend Error: ${error.message}`);
+      }
+
+      console.log('Email sent successfully:', data?.id);
+      return { success: true, messageId: data?.id };
+    } catch (error) {
+      console.error('Email sending failed with detailed error:', error);
+      throw error;
     }
+  };
 
-    console.log('Email sent successfully:', data?.id);
-    return { success: true, messageId: data?.id };
-  } catch (error) {
-    // Handle Resend Sandbox limitation (403 Forbidden)
-    if (error.statusCode === 403 && error.message?.includes('only send testing emails')) {
-      console.warn('\n⚠️  RESEND SANDBOX MODE DETECTED ⚠️');
-      console.warn(`Email to ${to} was blocked by Resend because the domain is not verified.`);
-      console.warn('Proceeding with MOCK SUCCESS to allow testing flow to continue.');
-      console.log('---------------- [ MOCKED EMAIL CONTENT ] ----------------');
-      console.log(`To: ${to}`);
-      console.log(`Subject: ${subject}`);
-      console.log('Preview (Text):', text);
-      console.log('----------------------------------------------------------\n');
-      
-      // Return fake success so the app flow doesn't break
-      return { success: true, messageId: 'mock-sandbox-id' };
-    }
-
-    console.error('Email sending failed with detailed error:', error);
-    throw error;
-  }
-};
-
-/**
- * Send OTP email
+  /**
+   * Send OTP email
  */
 export const sendOTPEmail = async (email, otp) => {
   if (!email || !otp) {

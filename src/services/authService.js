@@ -33,7 +33,7 @@ class AuthService {
         return {
           message: 'User already exists but is not verified. A new verification code has been sent.',
           userId: existingUser._id,
-          otp: process.env.NODE_ENV === 'development' ? otp : undefined,
+          otp,
           isResend: true
         };
       }
@@ -64,7 +64,7 @@ class AuthService {
     return {
       message: SUCCESS_MESSAGES.REGISTRATION_SUCCESS + ' (Check console for OTP if email fails)',
       userId: user._id,
-      otp: process.env.NODE_ENV === 'development' ? otp : undefined, // Include OTP in dev mode
+      otp, // Always return OTP for demo/exam purposes
     };
   }
 
