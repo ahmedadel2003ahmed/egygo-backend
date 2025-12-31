@@ -1,0 +1,96 @@
+# Trip Status Machine & Frontend Integration Guide
+
+This document defines the complete state machine for the Trip lifecycle and provides integration guidelines for the Frontend (Web & Mobile) to handle the new status updates.
+
+## 1. Trip States (`TRIP_STATES`)
+
+The trip lifecycle is governed by the following states. Ensure the frontend handles valid transitions and UI updates for each.
+
+| State | Description | Frontend Action |
+| :--- | :--- | :--- |
+| `draft` | Initial creation state. | - |
+| `selecting_guide` | Tourist created trip, system searching/user selecting guide. | Show "Searching for Guides" or "Select Guide". |
+| `awaiting_call` | Guide selected, waiting for initial negotiation call. | Show "Call Guide" button. |
+| `in_call` | Call is active between Tourist and Guide. | Show "In Call" interface. |
+| `pending_confirmation` | Call ended, agreement reached, waiting for Guide confirmation. | Guide: "Accept/Reject" buttons.<br>Tourist: "Waiting for confirmation". |
+| `awaiting_payment` | Guide accepted, waiting for Tourist payment. | Tourist: "Pay Now" button.<br>Guide: "Waiting for payment". |
+| `confirmed` | Payment successful. Trip is booked. | Show "Trip Confirmed". |
+| **`upcoming`** | **NEW**: Trip is within 24 hours of start time. | **Guide**: Show "Start Trip" button.<br>Tourist: "Trip starts soon". |
+| **`in_progress`** | **NEW**: Trip has actually started (Guide scanned QR/clicked start). | **Guide**: Show "Complete Trip" button.<br>Tourist: "Trip in progress". |
+| **`completed`** | **NEW**: Trip finished normally. | Show Review/Rating UI. |
+| `cancelled` | Trip cancelled by user or system. | Show "Cancelled". |
+| `rejected` | Guide rejected the proposal. | Show "Guide Declined". |
+| `archived` | Old completed/cancelled trip. | Read-only history. |
+
+---
+
+## 2. API Integration for New Statuses
+
+### A. Start Trip (Transition to `in_progress`)
+*   **Role**: Guide
+*   **Endpoint**: `POST /api/trips/:id/start`
+*   **Allowed Previous States**: `upcoming` (primary), `confirmed` (fallback).
+*   **Action**: Transitions trip status to `in_progress`.
+*   **Frontend Logic**:
+    *   **Condition**: If status is `upcoming` AND current user is the assigned Guide.
+    *   **UI**: Enable **"Start Trip"** button.
+
+### B. End Trip (Transition to `completed`)
+*   **Role**: Guide
+*   **Endpoint**: `POST /api/trips/:id/end`
+*   **Allowed Previous States**: `in_progress`.
+*   **Action**: Transitions trip status to `completed`.
+*   **Frontend Logic**:
+    *   **Condition**: If status is `in_progress` AND current user is the assigned Guide.
+    *   **UI**: Enable **"Complete Trip"** button.
+
+---
+
+## 3. Real-time Updates (Socket.io)
+
+The backend emits socket events when the status changes. The frontend **MUST** listen to these events to update the UI without reloading.
+
+*   **Event Name**: `trip:updated` (or specific `trip:status_change` depending on implementation)
+*   **Payload**: The updated Trip object.
+
+**Steps**:
+1.  Frontend subscribes to the Trip room (e.g., `trip_{tripId}`).
+2.  On `trip:updated` event:
+    *   Check `newTrip.status`.
+    *   Update local state.
+    *   Reflect new action buttons (e.g., if status becomes `upcoming`, show "Start").
+
+---
+
+## 4. State Transition Diagram
+
+```mermaid
+graph TD
+    DRAFT --> SELECTING_GUIDE
+    SELECTING_GUIDE --> AWAITING_CALL
+    AWAITING_CALL --> IN_CALL
+    IN_CALL --> PENDING_CONFIRMATION
+    PENDING_CONFIRMATION --> AWAITING_PAYMENT
+    AWAITING_PAYMENT --> CONFIRMED
+    CONFIRMED --> UPCOMING
+    UPCOMING --> IN_PROGRESS
+    IN_PROGRESS --> COMPLETED
+    COMPLETED --> ARCHIVED
+    
+    %% Cancellations available from most states
+    CONFIRMED -.-> CANCELLED
+    UPCOMING -.-> CANCELLED
+    IN_PROGRESS -.-> CANCELLED
+```
+
+## 5. Implementation Checklist for Frontend
+
+- [ ] **Update Type Definitions**: Ensure `Trip` interface includes `upcoming`, `in_progress`, `completed` in the Status enum.
+- [ ] **Guide Dashboard**:
+    - [ ] Create "Upcoming Trips" section.
+    - [ ] Add "Start Trip" button handler calling `/api/trips/:id/start`.
+    - [ ] Add "Complete Trip" button handler calling `/api/trips/:id/end`.
+- [ ] **Tourist Dashboard**:
+    - [ ] Update status badges to support new colors/labels for these states.
+    - [ ] Show "Review" modal only when status is `completed`.
+- [ ] **Socket Listeners**: Verify `trip:updated` correctly toggles the buttons.
