@@ -87,7 +87,7 @@ export const deleteAttraction = asyncHandler(async (req, res) => {
  * POST /api/attractions/:id/book-from-planner
  */
 export const bookFromPlace = asyncHandler(async (req, res) => {
-  const touristId = req.user.userId;
+  const touristId = req.user._id;
   const attractionId = req.params.id;
   const bookingData = req.body;
 

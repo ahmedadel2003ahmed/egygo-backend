@@ -296,18 +296,7 @@ router.post('/reset-password', authLimiter, validate(validateResetPassword), aut
  *                   type: boolean
  *                 data:
  *                   $ref: '#/components/schemas/User'
- *     responses:
- *       200:
- *         description: User profile
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 data:
- *                   $ref: '#/components/schemas/User'
+
  */
 router.get('/me', authenticate, authController.getMe);
 

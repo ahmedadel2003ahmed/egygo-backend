@@ -15,7 +15,7 @@ import { asyncHandler } from "../middlewares/errorHandler.js";
  * POST /api/calls/initiate
  */
 export const initiateCall = asyncHandler(async (req, res) => {
-  const touristUserId = req.user.userId;
+  const touristUserId = req.user._id;
   const { guideId } = req.body;
   const { tripId } = req.params;
 
@@ -85,7 +85,7 @@ export const joinCall = asyncHandler(async (req, res) => {
  * GET /api/calls/:callId/token?role=tourist|guide
  */
 export const getCallToken = asyncHandler(async (req, res) => {
-  const userId = req.user.userId;
+  const userId = req.user._id;
   const { callId } = req.params;
   const { role } = req.query;
 
@@ -109,7 +109,7 @@ export const getCallToken = asyncHandler(async (req, res) => {
  * POST /api/calls/:callId/end
  */
 export const endCall = asyncHandler(async (req, res) => {
-  const userId = req.user.userId;
+  const userId = req.user._id;
   const { callId } = req.params;
   const { reason } = req.body;
 
@@ -149,7 +149,7 @@ export const endCall = asyncHandler(async (req, res) => {
  * GET /api/calls/active
  */
 export const getActiveCalls = asyncHandler(async (req, res) => {
-  const userId = req.user.userId;
+  const userId = req.user._id;
 
   const sessions = await callService.getActiveSessionsByUser(userId);
 
@@ -164,7 +164,7 @@ export const getActiveCalls = asyncHandler(async (req, res) => {
  * GET /api/calls/:callId
  */
 export const getCallSession = asyncHandler(async (req, res) => {
-  const userId = req.user.userId;
+  const userId = req.user._id;
   const { callId } = req.params;
 
   const session = await callService.getSessionById(callId);
